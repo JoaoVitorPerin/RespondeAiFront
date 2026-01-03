@@ -27,4 +27,14 @@ export class AutenticacaoService {
       headers: this.headerService.getHeader(),
     });
   }
+
+  cadastro(dados: any): Observable<any> {
+    this.data = {
+      ...dados,
+    };
+    
+    return this.http.post<any>(`${this.API_BACK}auth/cadastro`, this.data, {
+      headers: this.headerService.getHeader(),
+    });
+  }
 }

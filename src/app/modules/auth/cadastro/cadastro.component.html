@@ -10,7 +10,7 @@
           </p>
         </div>
 
-        <div class="space-y-4">
+        <div class="space-y-4" [formGroup]="formCadastro">
           <label class="form-control w-full">
             <div class="label">
               <span class="label-text">Username</span>
@@ -19,6 +19,8 @@
               type="text"
               class="input input-bordered w-full"
               placeholder="Como podemos te chamar?"
+              formControlName="name"
+              ngDefaultControl
             />
           </label>
 
@@ -31,6 +33,8 @@
               class="input input-bordered w-full"
               placeholder="Digite seu email"
               autocomplete="email"
+              formControlName="email"
+              ngDefaultControl
             />
           </label>
 
@@ -43,6 +47,8 @@
               class="input input-bordered w-full"
               placeholder="Crie uma senha segura"
               autocomplete="new-password"
+              formControlName="password"
+              ngDefaultControl
             />
           </label>
 
@@ -55,11 +61,13 @@
               class="input input-bordered w-full"
               placeholder="Digite a senha novamente"
               autocomplete="new-password"
+              formControlName="confirmPassword"
+              ngDefaultControl
             />
           </label>
         </div>
 
-        <button class="btn btn-neutral w-full mt-2">
+        <button class="btn btn-neutral w-full mt-2" (click)="cadastro()">
           Criar conta
         </button>
 
