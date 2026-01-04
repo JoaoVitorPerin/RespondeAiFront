@@ -1,0 +1,17 @@
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.35); // cinza/escuro com transparência
+  backdrop-filter: blur(1px);       // opcional: dá um charme
+}
+
+::ng-deep .loading{
+    aspect-ratio: 1;
+    width: 5rem;
+}

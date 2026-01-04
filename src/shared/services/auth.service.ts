@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environments';
 import { HeaderService } from './header.service';
 
@@ -8,15 +8,12 @@ import { HeaderService } from './header.service';
   providedIn: 'root'
 })
 export class AutenticacaoService {
+  private readonly http = inject(HttpClient);
+  private readonly headerService = inject(HeaderService);
   private readonly API_BACK = environment.API_BACK;
 
   private data: any;
-  
-  constructor(
-    private http: HttpClient,
-    private headerService: HeaderService
-  ) {
-  }
+
 
   login(dados: any): Observable<any> {
     this.data = {

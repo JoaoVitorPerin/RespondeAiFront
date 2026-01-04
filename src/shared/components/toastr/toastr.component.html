@@ -1,0 +1,22 @@
+<div class="toast toast-top toast-end toast-stack">
+  @for (t of toasts; track trackById($index, t)) {
+    <div
+      class="toast-item"
+      [class.leaving]="t.leaving"
+      (click)="dismiss(t.id)"
+    >
+      @if(t.type === 'error'){
+        <div class="alert alert-error"><span>{{t.message}}</span></div>
+      }
+      @if(t.type === 'warning'){
+        <div class="alert alert-warning"><span>{{t.message}}</span></div>
+      }
+      @if(t.type === 'info'){
+        <div class="alert alert-info"><span>{{t.message}}</span></div>
+      }
+      @if(t.type === 'success'){
+        <div class="alert alert-success"><span>{{t.message}}</span></div>
+      }
+    </div>
+  }
+</div>

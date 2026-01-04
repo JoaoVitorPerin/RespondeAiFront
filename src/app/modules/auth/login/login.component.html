@@ -10,7 +10,7 @@
           </p>
         </div>
 
-        <div class="space-y-4" [formGroup]="formLogin">
+        <form class="space-y-4" [formGroup]="formLogin">
           <label class="form-control w-full">
             <div class="label">
               <span class="label-text">Email</span>
@@ -41,11 +41,13 @@
               ngDefaultControl
             />
           </label>
-        </div>
 
-        <button class="btn btn-neutral w-full mt-2" (click)="login()">
-          Login
-        </button>
+          <button class="btn btn-neutral w-full mt-2" (click)="login()" [disabled]="formLogin.invalid">
+            Login
+          </button>
+        </form>
+
+        
 
         <div class="divider my-1">ou</div>
 

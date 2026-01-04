@@ -1,16 +1,14 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpHeaders } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TokenService } from './token.service';
-import { environment } from '../../environments/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HeaderService {
-
+  private readonly tokenService = inject(TokenService);
   data: any;
-  private readonly API = `${environment.API_BACK}`;
 
   private headers: HttpHeaders = new HttpHeaders();
 
@@ -18,12 +16,6 @@ export class HeaderService {
 
   private buscarBreakingNews = new Subject<string>();
   buscarBreakingNews$ = this.buscarBreakingNews.asObservable();
-
-  constructor(
-    private tokenService: TokenService,
-    private http: HttpClient
-  ) {
-  }
 
   getHeader(adicionais? : any): any {
 

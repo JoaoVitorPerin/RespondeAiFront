@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { AutenticacaoService } from '../../../../shared/services/auth.service';
 import { TokenService } from '../../../../shared/services/token.service';
+import { ToastService } from '../../../../shared/components/toastr/toastr.service';
 
 @Component({
   selector: 'app-cadastro',
@@ -20,10 +21,12 @@ export class CadastroComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly autenticacaoService = inject(AutenticacaoService);
   private readonly tokenService = inject(TokenService);
+  private readonly toastService = inject(ToastService);
 
   formCadastro: FormGroup = new FormGroup({});
 
   ngOnInit() {
+    localStorage.clear();
     this.formCadastro = this.formBuilder.group({
       name: [null, Validators.required],
       email: [null, Validators.required],
@@ -42,9 +45,10 @@ export class CadastroComponent implements OnInit {
         this.tokenService.setToken(response.token);
         this.tokenService.setUser(response.user);
         this.router.navigate(['/chat']);
+        this.toastService.success('Cadastro realizado com sucesso!');
       },
       error: (error: any) => {
-        console.error('Erro no cadastro:', error);
+        this.toastService.error(error.error.message || 'Erro ao efetuar cadastro');
       },
     });
   }
