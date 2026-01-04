@@ -1,9 +1,11 @@
 import { TokenService } from './../../../shared/services/token.service';
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SocketService } from '../../../shared/services/socket.service';
 import { ChatMessage } from '../../../shared/interfaces/chatMessage';
+import { RoomDTO } from '../../../shared/interfaces/room';
+import { Subscription } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -12,45 +14,150 @@ import { ChatMessage } from '../../../shared/interfaces/chatMessage';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
   private readonly socketService = inject(SocketService);
   private readonly tokenService = inject(TokenService);
-  roomId = 'geral';
-  userName = 'Você';
-  text = '';
-  messages: ChatMessage[] = [];
 
-  @ViewChild('list') list!: ElementRef<HTMLDivElement>;
+  userName = 'Você';
+
+  rooms: RoomDTO[] = [];
+  selectedRoom: RoomDTO | null = null;
+
+  // input
+  text = '';
+  nomeSala = '';
+
+  // mensagens separadas por sala (não mistura)
+  private messagesByRoom = new Map<string, ChatMessage[]>();
+
+  // getter pro template
+  get messages(): ChatMessage[] {
+    if (!this.selectedRoom) return [];
+    return this.messagesByRoom.get(this.selectedRoom.id) ?? [];
+  }
+
+  // modal
+  isModalOpen = false;
+
+  @ViewChild('list') list?: ElementRef<HTMLDivElement>;
+
+  private subs: Subscription[] = [];
 
   ngOnInit(): void {
-    this.userName = this.tokenService.getUser().name || 'Você';
+    this.userName = this.tokenService.getUser()?.name || 'Você';
+
     this.socketService.connect();
-    this.socketService.joinRoom(this.roomId, this.userName);
 
-    this.socketService.onNewMessage().subscribe(m => {
-      this.messages.push(m);
-      setTimeout(() => this.scrollBottom());
-    });
+    this.socketService.listRooms();
 
-    this.socketService.onSystem().subscribe(ev => {
-      this.messages.push({
-        id: 'sys',
-        roomId: this.roomId,
-        userName: 'Sistema',
-        text: ev.text,
-        ts: ev.ts
-      });
-    });
+    this.subs.push(
+      this.socketService.onRoomsList().subscribe((rooms) => {
+        this.rooms = rooms;
+
+        if (this.selectedRoom && !rooms.some(r => r.id === this.selectedRoom!.id)) {
+          this.selectedRoom = null;
+          this.text = '';
+        }
+      })
+    );
+
+    this.subs.push(
+      this.socketService.onCreateRoomResult().subscribe((res) => {
+        if (!res.ok) {
+          alert(res.message || 'Erro ao criar sala');
+          return;
+        }
+        // backend já reenvia lista; a gente só fecha modal e limpa
+        this.nomeSala = '';
+        this.isModalOpen = false;
+      })
+    );
+
+    // mensagens novas: entram no map da sala certa
+    this.subs.push(
+      this.socketService.onNewMessage().subscribe((m) => {
+        const arr = this.messagesByRoom.get(m.roomId) ?? [];
+        arr.push(m);
+        this.messagesByRoom.set(m.roomId, arr);
+
+        // se mensagem for da sala aberta, scroll
+        if (this.selectedRoom?.id === m.roomId) {
+          setTimeout(() => this.scrollBottom());
+        }
+      })
+    );
+
+    // system message: também por sala (se tiver roomId use, se não tiver joga na sala atual)
+    this.subs.push(
+      this.socketService.onSystem().subscribe((ev) => {
+        const roomId = this.selectedRoom?.id;
+        if (!roomId) return; // sem sala selecionada, ignora
+
+        const arr = this.messagesByRoom.get(roomId) ?? [];
+
+        this.messagesByRoom.set(roomId, arr);
+
+        setTimeout(() => this.scrollBottom());
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
+  }
+
+  selectRoom(room: RoomDTO) {
+    this.selectedRoom = room;
+
+    // garante array inicial
+    if (!this.messagesByRoom.has(room.id)) {
+      this.messagesByRoom.set(room.id, []);
+    }
+
+    // entra no room pelo socket
+    this.socketService.joinRoom(room.id);
+
+    // limpa input e scroll
+    this.text = '';
+    setTimeout(() => this.scrollBottom());
   }
 
   send() {
-    if (!this.text.trim()) return;
-    this.socketService.sendMessage(this.roomId, this.userName, this.text);
+    if (!this.selectedRoom) return;
+    const msg = this.text.trim();
+    if (!msg) return;
+
+    this.socketService.sendMessage(this.selectedRoom.id, msg);
     this.text = '';
   }
 
   private scrollBottom() {
-    this.list.nativeElement.scrollTop =
-      this.list.nativeElement.scrollHeight;
+    if (!this.list) return;
+    this.list.nativeElement.scrollTop = this.list.nativeElement.scrollHeight;
+  }
+
+  autoResize(event: Event) {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  adicionarSala() {
+    const name = this.nomeSala.trim();
+    if (!name) return;
+    this.socketService.createRoom(name);
+  }
+
+  deletarSala() {
+    if (!this.selectedRoom) return;
+    
   }
 }
