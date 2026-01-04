@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AutenticacaoService } from '../../../../shared/services/auth.service';
 import { TokenService } from '../../../../shared/services/token.service';
 import { ToastService } from '../../../../shared/components/toastr/toastr.service';
+import { confirmPasswordValidator, validatorSenhaForte } from '../../../../shared/validators/validatorForm';
 
 @Component({
   selector: 'app-cadastro',
@@ -29,10 +30,13 @@ export class CadastroComponent implements OnInit {
     localStorage.clear();
     this.formCadastro = this.formBuilder.group({
       name: [null, Validators.required],
-      email: [null, Validators.required],
+      email: [null, [Validators.required, Validators.email]],
       password: [null, Validators.required],
       confirmPassword: [null, Validators.required]
-    })
+    },
+    { 
+      validators: [confirmPasswordValidator] 
+    });
   }
 
   navigateToLogin() {

@@ -10,10 +10,12 @@
           </p>
         </div>
 
+        <p class="text-xs opacity-60 text-start"><span class="text-red-500">*</span> Representam campos obrigatórios</p>
+
         <form class="space-y-4" [formGroup]="formCadastro">
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text">Username</span>
+              <span class="label-text">Username <span class="text-red-500">*</span></span>
             </div>
             <input
               type="text"
@@ -26,7 +28,7 @@
 
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text">Email</span>
+              <span class="label-text">Email <span class="text-red-500">*</span></span>
             </div>
             <input
               type="email"
@@ -38,9 +40,13 @@
             />
           </label>
 
+          <div style="margin-top: 5px!important" *ngIf="formCadastro.get('email')?.hasError('email') && formCadastro.get('email')?.touched">
+            <p class="text-red-500 text-xs">Digite um email válido!</p>
+          </div>
+
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text">Senha</span>
+              <span class="label-text">Senha <span class="text-red-500">*</span></span>
             </div>
             <input
               type="password"
@@ -54,7 +60,7 @@
 
           <label class="form-control w-full">
             <div class="label">
-              <span class="label-text">Confirmar senha</span>
+              <span class="label-text">Confirmar senha <span class="text-red-500">*</span></span>
             </div>
             <input
               type="password"
@@ -66,11 +72,14 @@
             />
           </label>
 
+          <div style="margin-top: 5px!important" *ngIf="formCadastro.get('confirmPassword')?.hasError('notSame') && formCadastro.get('confirmPassword')?.touched">
+            <p class="text-red-500 text-xs">As senhas não coincidem!</p>
+          </div>
+
           <button class="btn btn-neutral w-full mt-2" (click)="cadastro()" [disabled]="formCadastro.invalid">
             Criar conta
           </button>
         </form>
-
         <p class="text-xs opacity-60 text-center mt-1">
           Ao criar uma conta, você concorda com nossos
           <a class="link link-hover">Termos</a> e
