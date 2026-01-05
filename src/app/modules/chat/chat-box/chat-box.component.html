@@ -99,6 +99,39 @@
       name="nomeSala"
     />
 
+    <p class="opacity-70 mt-7">Adicione membros à sala</p>
+
+    <div class="flex items-end gap-3">
+      <input
+        type="text"
+        placeholder="Email do membro"
+        class="input input-bordered w-full mt-3"
+        [(ngModel)]="emailMembro"
+        name="emailMembro"
+      />
+      <button class="btn btn-primary" (click)="adicionarMembroSala()">
+        +
+      </button>
+    </div>
+
+    <div>
+      <p class="font-bold mt-5 mb-2">Membros adicionados:</p>
+      <div class="max-h-32 overflow-y-auto">
+        @for(membro of membrosSala; track membro){
+          <div class="flex align-center justify-between border border-base-300 rounded-md p-3 mb-2">
+            <p>{{ membro }}</p>
+            <button
+              class="btn btn-sm btn-error"
+              (click)="removerMembroSala(membro)"
+            >Remover</button>
+          </div>
+        }
+        @if(membrosSala.length === 0){
+          <div class="opacity-60">Nenhum membro adicionado ainda.</div>
+        }
+      </div>
+    </div>
+
     <div class="modal-action">
       <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
       <button

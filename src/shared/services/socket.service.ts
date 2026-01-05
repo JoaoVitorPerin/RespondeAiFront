@@ -35,16 +35,30 @@ export class SocketService {
     });
   }
 
-  createRoom(name: string) {
-    this.socket?.emit('room:create', { name });
+  createRoom(name: string, memberEmails: string[] = []) {
+    if (!this.socket) {
+      console.warn('Socket not connected - cannot emit room:create yet');
+      return;
+    }
+
+    const payload = { name, memberEmails: Array.isArray(memberEmails) ? [...memberEmails] : [] };
+    this.socket.emit('room:create', payload);
   }
 
   deleteRoom(roomId: string) {
     this.socket?.emit('room:delete', { roomId });
   }
 
-  editRoom(roomId: string, name: string) {
-    this.socket?.emit('room:edit', { roomId, name });
+  editRoom(roomId: string, name: string, memberEmails: string[] = []) {
+    if (!this.socket) {
+      console.warn('Socket not connected - cannot emit room:create yet');
+      return;
+    }
+
+    console.log('Emitting room:edit with', roomId, name, memberEmails);
+
+    const payload = { roomId, name, memberEmails: Array.isArray(memberEmails) ? [...memberEmails] : [] };
+    this.socket?.emit('room:edit', payload);
   }
 
   onCreateRoomResult(): Observable<{ ok: boolean; roomId?: string; message?: string }> {
