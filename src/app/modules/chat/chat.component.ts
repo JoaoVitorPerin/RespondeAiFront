@@ -6,11 +6,16 @@ import { SocketService } from '../../../shared/services/socket.service';
 import { ChatMessage } from '../../../shared/interfaces/chatMessage';
 import { RoomDTO } from '../../../shared/interfaces/room';
 import { Subscription } from 'rxjs';
+import { AsiderBarSalasComponent } from './asider-bar-salas/asider-bar-salas.component';
 
 @Component({
   standalone: true,
   selector: 'app-chat',
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    AsiderBarSalasComponent
+  ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
@@ -37,7 +42,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   // modal
-  isModalAdicionarSalaOpen = false;
+  isModalEditarOpen = false;
   isModalDeletarSalaOpen = false;
   isEdicao = false;
 
@@ -60,18 +65,6 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.selectedRoom = null;
           this.text = '';
         }
-      })
-    );
-
-    this.subs.push(
-      this.socketService.onCreateRoomResult().subscribe((res) => {
-        if (!res.ok) {
-          alert(res.message || 'Erro ao criar sala');
-          return;
-        }
-        // backend já reenvia lista; a gente só fecha modal e limpa
-        this.nomeSala = '';
-        this.isModalAdicionarSalaOpen = false;
       })
     );
 
@@ -111,15 +104,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   selectRoom(room: RoomDTO) {
     this.selectedRoom = room;
 
-    // garante array inicial
     if (!this.messagesByRoom.has(room.id)) {
       this.messagesByRoom.set(room.id, []);
     }
 
-    // entra no room pelo socket
     this.socketService.joinRoom(room.id);
 
-    // limpa input e scroll
     this.text = '';
     setTimeout(() => this.scrollBottom());
   }
@@ -144,12 +134,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     textarea.style.height = textarea.scrollHeight + 'px';
   }
 
-  openModalAdicionarEditarSala(nomeSalaEdicao?: string) {
-    if(nomeSalaEdicao){
-      this.nomeSala = nomeSalaEdicao || '';
-      this.isEdicao = true;
-    }
-    this.isModalAdicionarSalaOpen = true;
+  openModalEditarSala(nomeSalaEdicao: string) {
+    this.nomeSala = nomeSalaEdicao || '';
+    this.isEdicao = true;
+    this.isModalEditarOpen = true;
   }
 
   openModalDeletarSala() {
@@ -159,14 +147,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   closeModal() {
     this.nomeSala = '';
     this.isEdicao = false;
-    this.isModalAdicionarSalaOpen = false;
+    this.isModalEditarOpen = false;
     this.isModalDeletarSalaOpen = false;
-  }
-
-  adicionarSala() {
-    const name = this.nomeSala.trim();
-    if (!name) return;
-    this.socketService.createRoom(name);
   }
 
   deletarSala() {

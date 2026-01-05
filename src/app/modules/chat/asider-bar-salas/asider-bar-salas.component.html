@@ -1,0 +1,54 @@
+<aside class="w-64 bg-base-100 border-r border-base-300 hidden md:flex flex-col h-screen">
+  <div class="p-4 flex items-center justify-between border-b border-base-300">
+    <p class="font-bold text-lg">💬 Salas</p>
+
+    <button class="btn btn-sm btn-primary" (click)="openModalAdicionarSala()">
+      +
+    </button>
+  </div>
+
+  <ul class="menu p-2 flex-1 overflow-y-auto">
+    @for(rom of rooms; track rom.id){
+      <li>
+        <a
+          (click)="selectRoom(rom)"
+          [class.active]="selectedRoom?.id === rom.id"
+        >
+          # {{ rom.name }}
+        </a>
+      </li>
+    }
+
+    @if(rooms.length === 0){
+      <li class="p-2 opacity-60">
+        Nenhuma sala ainda.
+      </li>
+    }
+  </ul>
+</aside>
+
+<dialog class="modal" [open]="isModalAdicionarSalaOpen">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold mb-3">Adicionar sala</h3>
+    <p class="opacity-70">Digite o nome da nova sala de chat.</p>
+
+    <input
+      type="text"
+      placeholder="Nome da sala"
+      class="input input-bordered w-full mt-3"
+      [(ngModel)]="nomeSala"
+      name="nomeSala"
+    />
+
+    <div class="modal-action">
+      <button class="btn btn-sm" (click)="closeModalAdicionarSala()">Fechar</button>
+      <button
+        class="btn btn-sm btn-primary"
+        (click)="adicionarSala()"
+        [disabled]="!nomeSala"
+      >
+        Adicionar
+      </button>
+    </div>
+  </div>
+</dialog>

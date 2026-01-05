@@ -1,36 +1,7 @@
 <div class="h-screen bg-base-200 flex">
-
-  <aside class="w-64 bg-base-100 border-r border-base-300 hidden md:flex flex-col">
-    <div class="p-4 flex items-center justify-between border-b border-base-300">
-      <p class="font-bold text-lg">💬 Salas</p>
-
-      <button class="btn btn-sm btn-primary" (click)="openModalAdicionarEditarSala()">
-        +
-      </button>
-    </div>
-
-    <ul class="menu p-2 flex-1 overflow-y-auto">
-      <li *ngFor="let r of rooms">
-        <a
-          (click)="selectRoom(r)"
-          [class.active]="selectedRoom?.id === r.id"
-        >
-          # {{ r.name }}
-        </a>
-      </li>
-
-      <li *ngIf="rooms.length === 0" class="p-2 opacity-60">
-        Nenhuma sala ainda.
-      </li>
-    </ul>
-
-    <div class="p-3 border-t border-base-300 text-sm opacity-70">
-      Online: em desenvolvimento...
-    </div>
-  </aside>
+  <app-asider-bar-salas [rooms]="rooms" [selectedRoom]="selectedRoom" (roomSelected)="selectRoom($event)"></app-asider-bar-salas>
 
   <main class="flex-1 flex flex-col">
-
     <!-- Header: muda conforme sala -->
     <header class="h-14 bg-base-100 border-b border-base-300 flex items-center px-4">
       <div *ngIf="selectedRoom; else noRoomTitle" class="flex items-center justify-between w-full">
@@ -39,7 +10,7 @@
         </h2>
         @if(selectedRoom.role === 'ADMIN'){
         <div class="flex gap-2">
-          <button class="btn btn-sm btn-info" (click)="openModalAdicionarEditarSala(selectedRoom.name || '')">
+          <button class="btn btn-sm btn-info" (click)="openModalEditarSala(selectedRoom.name)">
             Editar
           </button>
           <button class="btn btn-sm btn-error" (click)="openModalDeletarSala()">
@@ -119,10 +90,10 @@
   </main>
 </div>
 
-<dialog class="modal" [open]="isModalAdicionarSalaOpen">
+<dialog class="modal" [open]="isModalEditarOpen">
   <div class="modal-box">
-    <h3 class="text-lg font-bold mb-3">{{ isEdicao ? 'Editar sala' : 'Adicionar sala' }}</h3>
-    <p class="opacity-70">{{ isEdicao ? 'Digite o nome da sala editada.' : 'Digite o nome da nova sala de chat.' }}</p>
+    <h3 class="text-lg font-bold mb-3">Editar sala</h3>
+    <p class="opacity-70">Digite o nome da sala editada.</p>
 
     <input
       type="text"
@@ -136,10 +107,10 @@
       <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
       <button
         class="btn btn-sm btn-primary"
-        (click)="isEdicao ? editarSala() : adicionarSala()"
+        (click)=" editarSala()"
         [disabled]="!nomeSala"
       >
-        Adicionar
+        Editar
       </button>
     </div>
   </div>
