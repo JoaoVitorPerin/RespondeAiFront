@@ -55,10 +55,20 @@ export class SocketService {
       return;
     }
 
-    console.log('Emitting room:edit with', roomId, name, memberEmails);
-
     const payload = { roomId, name, memberEmails: Array.isArray(memberEmails) ? [...memberEmails] : [] };
     this.socket?.emit('room:edit', payload);
+  }
+
+  removeMemberFromRoom(roomId: string, memberName: string) {
+    this.socket?.emit('room:member:remove', { roomId, memberName });
+  }
+
+  onRemoveMemberFromRoom(): Observable<{ ok: boolean; roomId?: string; message?: string }> {
+    return new Observable(sub => {
+      const handler = (res: any) => this.zone.run(() => sub.next(res));
+      this.socket?.on('room:member:remove:result', handler);
+      return () => this.socket?.off('room:member:remove:result', handler);
+    });
   }
 
   onCreateRoomResult(): Observable<{ ok: boolean; roomId?: string; message?: string }> {

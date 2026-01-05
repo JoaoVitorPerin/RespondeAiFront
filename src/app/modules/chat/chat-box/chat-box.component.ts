@@ -5,6 +5,7 @@ import { SocketService } from '../../../../shared/services/socket.service';
 import { RoomDTO } from '../../../../shared/interfaces/room';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../../../shared/components/toastr/toastr.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat-box',
@@ -16,7 +17,7 @@ import { ToastService } from '../../../../shared/components/toastr/toastr.servic
     FormsModule
   ]
 })
-export class ChatBoxComponent{
+export class ChatBoxComponent implements OnInit {
   private readonly socketService = inject(SocketService);
   private readonly toastService = inject(ToastService);
 
@@ -32,8 +33,25 @@ export class ChatBoxComponent{
 
   isModalEditarOpen = false;
   isModalDeletarSalaOpen = false;
+  isModalSairSalaOpen = false;
+
+  subs: Subscription[] = [];
 
   @Output() deletarSalaEvent = new EventEmitter<RoomDTO>();
+
+  ngOnInit(): void {
+    this.subs.push(
+      this.socketService.onRemoveMemberFromRoom().subscribe((res) => {
+        if (!res.ok) {
+          this.toastService.error(res.message || 'Erro ao sair da sala.');
+          return;
+        }
+
+        this.toastService.success('Você saiu da sala com sucesso.');
+        this.isModalSairSalaOpen = false;
+      })
+    );
+  }
 
   autoResize(event: Event) {
     const textarea = event.target as HTMLTextAreaElement;
@@ -51,10 +69,15 @@ export class ChatBoxComponent{
     this.isModalDeletarSalaOpen = true;
   }
 
+  openModalSairSala() {
+    this.isModalSairSalaOpen = true;
+  }
+
   closeModal() {
     this.nomeSala = '';
     this.isModalEditarOpen = false;
     this.isModalDeletarSalaOpen = false;
+    this.isModalSairSalaOpen = false;
     this.membrosSala = [];
     this.emailMembro = '';
   }
@@ -65,6 +88,12 @@ export class ChatBoxComponent{
     this.socketService.deleteRoom(this.selectedRoom.id);
     this.closeModal();
     this.deletarSalaEvent.emit(this.selectedRoom);
+  }
+
+  sairDaSala() {
+    if (!this.selectedRoom) return;
+
+    this.socketService.removeMemberFromRoom(this.selectedRoom.id, this.userName);
   }
 
   editarSala(){
