@@ -37,7 +37,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   // modal
-  isModalOpen = false;
+  isModalAdicionarSalaOpen = false;
+  isModalDeletarSalaOpen = false;
+  isEdicao = false;
 
   @ViewChild('list') list?: ElementRef<HTMLDivElement>;
 
@@ -69,7 +71,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
         // backend já reenvia lista; a gente só fecha modal e limpa
         this.nomeSala = '';
-        this.isModalOpen = false;
+        this.isModalAdicionarSalaOpen = false;
       })
     );
 
@@ -142,12 +144,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     textarea.style.height = textarea.scrollHeight + 'px';
   }
 
-  openModal() {
-    this.isModalOpen = true;
+  openModalAdicionarEditarSala(nomeSalaEdicao?: string) {
+    if(nomeSalaEdicao){
+      this.nomeSala = nomeSalaEdicao || '';
+      this.isEdicao = true;
+    }
+    this.isModalAdicionarSalaOpen = true;
+  }
+
+  openModalDeletarSala() {
+    this.isModalDeletarSalaOpen = true;
   }
 
   closeModal() {
-    this.isModalOpen = false;
+    this.nomeSala = '';
+    this.isEdicao = false;
+    this.isModalAdicionarSalaOpen = false;
+    this.isModalDeletarSalaOpen = false;
   }
 
   adicionarSala() {
@@ -159,5 +172,20 @@ export class ChatComponent implements OnInit, OnDestroy {
   deletarSala() {
     if (!this.selectedRoom) return;
     
+    this.socketService.deleteRoom(this.selectedRoom.id);
+    this.closeModal();
+    this.rooms = this.rooms.filter(r => r.id !== this.selectedRoom!.id);
+    this.selectedRoom = null;
+  }
+
+  editarSala(){
+    if (!this.selectedRoom) return;
+    
+    const name = this.nomeSala.trim();
+    if (!name) return;
+
+    this.socketService.editRoom(this.selectedRoom.id, name);
+    this.closeModal();
+    this.selectedRoom.name = name;
   }
 }

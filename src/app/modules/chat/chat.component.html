@@ -4,7 +4,7 @@
     <div class="p-4 flex items-center justify-between border-b border-base-300">
       <p class="font-bold text-lg">💬 Salas</p>
 
-      <button class="btn btn-sm btn-primary" (click)="openModal()">
+      <button class="btn btn-sm btn-primary" (click)="openModalAdicionarEditarSala()">
         +
       </button>
     </div>
@@ -38,9 +38,14 @@
           # {{ selectedRoom.name }}
         </h2>
         @if(selectedRoom.role === 'ADMIN'){
-          <button class="btn btn-sm btn-error" (click)="deletarSala()">
-            Deletar sala
+        <div class="flex gap-2">
+          <button class="btn btn-sm btn-info" (click)="openModalAdicionarEditarSala(selectedRoom.name || '')">
+            Editar
           </button>
+          <button class="btn btn-sm btn-error" (click)="openModalDeletarSala()">
+            Deletar
+          </button>
+        </div>
         }
       </div>
 
@@ -114,8 +119,7 @@
   </main>
 </div>
 
-<!-- Modal controlado por Angular -->
-<dialog class="modal" [open]="isModalOpen">
+<dialog class="modal" [open]="isModalAdicionarSalaOpen">
   <div class="modal-box">
     <h3 class="text-lg font-bold mb-3">Adicionar sala</h3>
     <p class="opacity-70">Digite o nome da nova sala de chat.</p>
@@ -132,10 +136,26 @@
       <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
       <button
         class="btn btn-sm btn-primary"
-        (click)="adicionarSala()"
+        (click)="isEdicao ? editarSala() : adicionarSala()"
         [disabled]="!nomeSala"
       >
         Adicionar
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="modal" [open]="isModalDeletarSalaOpen">
+  <div class="modal-box">
+    <p class="opacity-70">Tem certeza que deseja excluir permanentemente a sala <b>{{ selectedRoom?.name }}</b>?</p>
+    <p class="opacity-50">Essa ação não pode ser desfeita.</p>
+    <div class="modal-action">
+      <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
+      <button
+        class="btn btn-sm btn-primary"
+        (click)="deletarSala()"
+      >
+        Deletar
       </button>
     </div>
   </div>

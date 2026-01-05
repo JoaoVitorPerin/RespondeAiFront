@@ -39,6 +39,14 @@ export class SocketService {
     this.socket?.emit('room:create', { name });
   }
 
+  deleteRoom(roomId: string) {
+    this.socket?.emit('room:delete', { roomId });
+  }
+
+  editRoom(roomId: string, name: string) {
+    this.socket?.emit('room:edit', { roomId, name });
+  }
+
   onCreateRoomResult(): Observable<{ ok: boolean; roomId?: string; message?: string }> {
     return new Observable(sub => {
       const handler = (res: any) => this.zone.run(() => sub.next(res));
