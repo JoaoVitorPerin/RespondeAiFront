@@ -121,8 +121,8 @@
 
 <dialog class="modal" [open]="isModalAdicionarSalaOpen">
   <div class="modal-box">
-    <h3 class="text-lg font-bold mb-3">Adicionar sala</h3>
-    <p class="opacity-70">Digite o nome da nova sala de chat.</p>
+    <h3 class="text-lg font-bold mb-3">{{ isEdicao ? 'Editar sala' : 'Adicionar sala' }}</h3>
+    <p class="opacity-70">{{ isEdicao ? 'Digite o nome da sala editada.' : 'Digite o nome da nova sala de chat.' }}</p>
 
     <input
       type="text"
@@ -147,8 +147,8 @@
 
 <dialog class="modal" [open]="isModalDeletarSalaOpen">
   <div class="modal-box">
+    <h3 class="text-lg font-bold mb-3">Deletar sala</h3>
     <p class="opacity-70">Tem certeza que deseja excluir permanentemente a sala <b>{{ selectedRoom?.name }}</b>?</p>
-    <p class="opacity-50">Essa ação não pode ser desfeita.</p>
     <div class="modal-action">
       <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
       <button
