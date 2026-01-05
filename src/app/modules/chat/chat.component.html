@@ -8,5 +8,8 @@
     [rooms]="rooms"
     (deletarSalaEvent)="deletarSala($event)">
   </app-chat-box>
+  @if(selectedRoom){
+    <app-side-bar-membros [selectedRoom]="selectedRoom"></app-side-bar-membros>
+  }
 </div>
 

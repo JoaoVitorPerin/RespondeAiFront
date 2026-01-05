@@ -1,0 +1,24 @@
+<aside class="w-64 bg-base-100 border-l border-base-300 hidden md:flex flex-col h-screen">
+  <div class="h-14 p-4 flex items-center justify-between border-b border-base-300">
+    <p class="font-bold text-lg">🙍‍♂️ Membros</p>
+  </div>
+  <div class="flex-1 overflow-y-auto">
+    <ul>
+      @for(member of selectedRoom()?.members; track member){
+        <li class="flex items-center justify-between alignp-2 border-b border-base-300 hover:bg-base-200 px-3 py-2 cursor-pointer">
+          <div class="flex items-center">
+            <div class="avatar placeholder">
+              <div class="bg-neutral text-neutral-content rounded-full w-8">
+                <span>{{ (member.name || '?')[0] }}</span>
+              </div>
+            </div>
+            <p class="ml-2">{{ member.name }}</p>
+          </div>
+          @if(member.role === 'ADMIN') {
+            <span class="ml-2 badge badge-primary">Admin</span>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+</aside>

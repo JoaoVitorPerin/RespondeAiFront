@@ -8,6 +8,7 @@ import { RoomDTO } from '../../../shared/interfaces/room';
 import { Subscription } from 'rxjs';
 import { AsiderBarSalasComponent } from './asider-bar-salas/asider-bar-salas.component';
 import { ChatBoxComponent } from './chat-box/chat-box.component';
+import { SideBarMembrosComponent } from './side-bar-membros/side-bar-membros.component';
 
 @Component({
   standalone: true,
@@ -16,7 +17,8 @@ import { ChatBoxComponent } from './chat-box/chat-box.component';
     CommonModule, 
     FormsModule,
     AsiderBarSalasComponent,
-    ChatBoxComponent
+    ChatBoxComponent,
+    SideBarMembrosComponent
   ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
