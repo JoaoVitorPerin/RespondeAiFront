@@ -7,6 +7,7 @@ import { ChatMessage } from '../../../shared/interfaces/chatMessage';
 import { RoomDTO } from '../../../shared/interfaces/room';
 import { Subscription } from 'rxjs';
 import { AsiderBarSalasComponent } from './asider-bar-salas/asider-bar-salas.component';
+import { ChatBoxComponent } from './chat-box/chat-box.component';
 
 @Component({
   standalone: true,
@@ -14,7 +15,8 @@ import { AsiderBarSalasComponent } from './asider-bar-salas/asider-bar-salas.com
   imports: [
     CommonModule, 
     FormsModule,
-    AsiderBarSalasComponent
+    AsiderBarSalasComponent,
+    ChatBoxComponent
   ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
@@ -28,11 +30,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   rooms: RoomDTO[] = [];
   selectedRoom: RoomDTO | null = null;
 
-  // input
   text = '';
   nomeSala = '';
 
-  // mensagens separadas por sala (não mistura)
   private messagesByRoom = new Map<string, ChatMessage[]>();
 
   // getter pro template
@@ -41,10 +41,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     return this.messagesByRoom.get(this.selectedRoom.id) ?? [];
   }
 
-  // modal
-  isModalEditarOpen = false;
-  isModalDeletarSalaOpen = false;
-  isEdicao = false;
 
   @ViewChild('list') list?: ElementRef<HTMLDivElement>;
 
@@ -114,60 +110,15 @@ export class ChatComponent implements OnInit, OnDestroy {
     setTimeout(() => this.scrollBottom());
   }
 
-  send() {
-    if (!this.selectedRoom) return;
-    const msg = this.text.trim();
-    if (!msg) return;
-
-    this.socketService.sendMessage(this.selectedRoom.id, msg);
-    this.text = '';
-  }
-
   private scrollBottom() {
     if (!this.list) return;
     this.list.nativeElement.scrollTop = this.list.nativeElement.scrollHeight;
   }
 
-  autoResize(event: Event) {
-    const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-  }
-
-  openModalEditarSala(nomeSalaEdicao: string) {
-    this.nomeSala = nomeSalaEdicao || '';
-    this.isEdicao = true;
-    this.isModalEditarOpen = true;
-  }
-
-  openModalDeletarSala() {
-    this.isModalDeletarSalaOpen = true;
-  }
-
-  closeModal() {
-    this.nomeSala = '';
-    this.isEdicao = false;
-    this.isModalEditarOpen = false;
-    this.isModalDeletarSalaOpen = false;
-  }
-
-  deletarSala() {
-    if (!this.selectedRoom) return;
+  deletarSala(room: RoomDTO) {
+    if (!room) return;
     
-    this.socketService.deleteRoom(this.selectedRoom.id);
-    this.closeModal();
     this.rooms = this.rooms.filter(r => r.id !== this.selectedRoom!.id);
     this.selectedRoom = null;
-  }
-
-  editarSala(){
-    if (!this.selectedRoom) return;
-    
-    const name = this.nomeSala.trim();
-    if (!name) return;
-
-    this.socketService.editRoom(this.selectedRoom.id, name);
-    this.closeModal();
-    this.selectedRoom.name = name;
   }
 }

@@ -1,0 +1,129 @@
+<main class="flex-1 flex flex-col h-screen w-full bg-base-200">
+  <header class="h-14 bg-base-100 border-b border-base-300 flex items-center px-4">
+    @if(selectedRoom){
+      <div class="flex items-center justify-between w-full">
+        <h2 class="font-semibold text-lg" >
+          # {{ selectedRoom.name }}
+        </h2>
+        @if(selectedRoom.role === 'ADMIN'){
+        <div class="flex gap-2">
+          <button class="btn btn-sm btn-info" (click)="openModalEditarSala(selectedRoom.name)">
+            Editar
+          </button>
+          <button class="btn btn-sm btn-error" (click)="openModalDeletarSala()">
+            Deletar
+          </button>
+        </div>
+        }
+      </div>
+    }@else{
+      <h2 class="font-semibold text-lg opacity-70">Selecione uma sala</h2>
+    }
+  </header>
+
+  @if(!selectedRoom){
+    <section class="flex-1 grid place-items-center p-6">
+      <div class="max-w-md text-center space-y-3">
+        <h3 class="text-xl font-bold">Bem-vindo, {{ userName }} 👋</h3>
+        <p class="opacity-70">
+          Escolha uma sala na lateral para começar a conversar,
+          ou crie uma nova sala no botão <b>+</b>.
+        </p>
+      </div>
+    </section>
+  }
+
+  @if(selectedRoom){
+    <section class="flex-1 overflow-y-auto p-4 space-y-3" #list>
+      @for(message of messages; track message){
+        <div class="flex gap-3" [class.justify-end]="message.userName === userName">
+
+          @if(message.userName !== userName){
+            <div class="avatar placeholder">
+              <div class="bg-neutral text-neutral-content rounded-full w-8">
+                <span>{{ (message.userName || '?')[0] }}</span>
+              </div>
+            </div>
+          }
+
+          <div [class.text-right]="message.userName === userName">
+            <div class="text-sm font-semibold">
+              {{ message.userName }}
+              <span class="text-xs opacity-60 ml-1">
+                {{ message.ts ? (message.ts | date:'HH:mm') : '' }}
+              </span>
+            </div>
+
+            <div
+              class="text-sm opacity-90 chat-text"
+              [class.bg-base-300]="message.userName === userName"
+              [class.rounded-lg]="message.userName === userName"
+              [class.px-3]="message.userName === userName"
+              [class.py-1]="message.userName === userName"
+              [class.inline-block]="message.userName === userName"
+            >
+              {{ message.text }}
+            </div>
+          </div>
+        </div>
+      }
+    </section>
+
+    <footer class="p-3 bg-base-100 border-t border-base-300">
+      <div class="flex gap-2">
+        <textarea
+          class="input input-bordered w-full bg-base-200 resize-none overflow-hidden"
+          [(ngModel)]="text"
+          (input)="autoResize($event)"
+          (keydown.enter)="sendMessage()"
+          placeholder="Digite uma mensagem..."
+        ></textarea>
+        <button class="btn btn-neutral" (click)="sendMessage()">
+          Enviar
+        </button>
+      </div>
+    </footer>
+  }
+</main>
+
+<dialog class="modal" [open]="isModalEditarOpen">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold mb-3">Editar sala</h3>
+    <p class="opacity-70">Digite o nome da sala editada.</p>
+
+    <input
+      type="text"
+      placeholder="Nome da sala"
+      class="input input-bordered w-full mt-3"
+      [(ngModel)]="nomeSala"
+      name="nomeSala"
+    />
+
+    <div class="modal-action">
+      <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
+      <button
+        class="btn btn-sm btn-primary"
+        (click)=" editarSala()"
+        [disabled]="!nomeSala"
+      >
+        Editar
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="modal" [open]="isModalDeletarSalaOpen">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold mb-3">Deletar sala</h3>
+    <p class="opacity-70">Tem certeza que deseja excluir permanentemente a sala <b>{{ selectedRoom?.name }}</b>?</p>
+    <div class="modal-action">
+      <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
+      <button
+        class="btn btn-sm btn-primary"
+        (click)="deletarSala()"
+      >
+        Deletar
+      </button>
+    </div>
+  </div>
+</dialog>
