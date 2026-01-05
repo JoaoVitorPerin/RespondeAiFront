@@ -32,6 +32,7 @@ export class AsiderBarSalasComponent implements OnInit, OnDestroy {
   membrosSala: string[] = [];
 
   @Output() roomSelected = new EventEmitter<RoomDTO>();
+  @Output() roomDeselected = new EventEmitter<void>();
 
   ngOnInit(): void {
     this.subs.push(
@@ -92,5 +93,9 @@ export class AsiderBarSalasComponent implements OnInit, OnDestroy {
 
   removerMembroSala(email: string) {
     this.membrosSala = this.membrosSala.filter(m => m !== email);
+  }
+
+  sairSalaAtual(){
+    this.roomDeselected.emit();
   }
 }

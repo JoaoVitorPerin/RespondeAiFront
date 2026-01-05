@@ -123,4 +123,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.rooms = this.rooms.filter(r => r.id !== this.selectedRoom!.id);
     this.selectedRoom = null;
   }
+
+  deselectedRoom(){
+    this.selectedRoom = null;
+  }
 }

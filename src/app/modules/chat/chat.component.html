@@ -1,5 +1,10 @@
 <div class="h-screen bg-base-200 flex">
-  <app-asider-bar-salas [rooms]="rooms" [selectedRoom]="selectedRoom" (roomSelected)="selectRoom($event)"></app-asider-bar-salas>
+  <app-asider-bar-salas 
+    [rooms]="rooms" 
+    [selectedRoom]="selectedRoom" 
+    (roomSelected)="selectRoom($event)" 
+    (roomDeselected)="deselectedRoom()">
+  </app-asider-bar-salas>
   <app-chat-box
     class="w-full"
     [userName]="userName"
@@ -9,7 +14,9 @@
     (deletarSalaEvent)="deletarSala($event)">
   </app-chat-box>
   @if(selectedRoom){
-    <app-side-bar-membros [selectedRoom]="selectedRoom"></app-side-bar-membros>
+    <app-side-bar-membros 
+      [selectedRoom]="selectedRoom">
+    </app-side-bar-membros>
   }
 </div>
 
