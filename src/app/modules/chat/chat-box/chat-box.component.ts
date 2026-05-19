@@ -24,6 +24,7 @@ export class ChatBoxComponent implements OnInit {
 
   @Input() nomeCompleto: string = '';
   @Input() numeroTelefone: string = '';
+  @Input() dadosPolitico: any = null;
 
   textoMensagem = '';
   messages: any[] = [];

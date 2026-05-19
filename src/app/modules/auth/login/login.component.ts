@@ -41,13 +41,11 @@ export class LoginComponent implements OnInit {
     this.autenticacaoService.login(this.formLogin.getRawValue()).subscribe({
       next: (response) => {
         this.tokenService.setToken(response.token);
-        this.tokenService.setUser(response.user);
+        this.tokenService.setUser(JSON.stringify(response.politician));
+        this.router.navigate(['/home']);
       },
       error: (error) => {
         this.toastService.error(error.error.message || 'Erro ao efetuar login');
-      },
-      complete: () => {
-        this.router.navigate(['/chat']);
       }
     });
   }

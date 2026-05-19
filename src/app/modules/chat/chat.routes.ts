@@ -7,7 +7,7 @@ export const CHAT_ROUTES: Routes = [
       import('./chat.component').then(c => c.ChatComponent),
   },
   {
-    path: ':roomId',
+    path: ':hashPolitian',
     loadComponent: () =>
       import('./chat.component').then(c => c.ChatComponent),
   },

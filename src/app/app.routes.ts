@@ -13,6 +13,11 @@ export const routes: Routes = [
         loadChildren: () =>
             import('./modules/chat/chat.routes').then(m => m.CHAT_ROUTES),
     },
+    {
+        path: 'home',
+        loadChildren: () =>
+            import('./modules/home/home.routes').then(m => m.HOME_ROUTES),
+    },
     { path: '', pathMatch: 'full', redirectTo: 'chat' },
     { path: '**', redirectTo: 'chat' },
 ];

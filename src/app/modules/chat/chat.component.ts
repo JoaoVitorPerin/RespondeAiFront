@@ -1,3 +1,4 @@
+import { ApiChatService } from './../../../shared/services/apiChat.service';
 import { TokenService } from './../../../shared/services/token.service';
 import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -22,10 +23,14 @@ import { SideBarMembrosComponent } from './side-bar-membros/side-bar-membros.com
 })
 export class ChatComponent implements OnInit, OnDestroy {
   private readonly tokenService = inject(TokenService);
+  private readonly apiChatService = inject(ApiChatService);
 
   nomeCompleto = '';
   numeroTelefone = '';
   isModalUsuarioOpen = true;
+
+  hashChatPolitico = '';
+  dadosPolitico: any = null;
 
   text = '';
 
@@ -41,6 +46,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.nomeCompleto = usuarioSalvo.nomeCompleto;
       this.numeroTelefone = usuarioSalvo.numeroTelefone;
     }
+
+    this.buscarDadosPolitico();
   }
 
   ngOnDestroy(): void {
@@ -50,6 +57,18 @@ export class ChatComponent implements OnInit, OnDestroy {
   private scrollBottom() {
     if (!this.list) return;
     this.list.nativeElement.scrollTop = this.list.nativeElement.scrollHeight;
+  }
+
+  buscarDadosPolitico(){
+    this.hashChatPolitico = window.location.pathname.split('/').pop() || '';
+    if(this.hashChatPolitico) {
+      this.apiChatService.buscarDadosPolitico(this.hashChatPolitico).subscribe({
+        next: (dados) => {
+          this.dadosPolitico = dados;
+          console.log('Dados do político:', this.dadosPolitico);
+        }
+      });
+    }
   }
 
   salvarUsuario() {

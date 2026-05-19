@@ -1,8 +1,8 @@
 <div class="flex-1 flex h-screen w-full justify-center">
   <main class="flex flex-col h-screen w-full max-w-4xl">
   <header class="h-12 border-b flex items-center justify-between px-4 sticky top-0">
-    <h2 class="font-medium text-2xl">Chat do Vereador</h2>
-    <h3 class="font-medium text-2xl">Número: 2929</h3>
+    <h2 class="font-medium text-2xl">Chat do {{ dadosPolitico?.name || 'Vereador' }} - {{ dadosPolitico?.party || 'Partido' }}</h2>
+    <h3 class="font-medium text-2xl">Número: {{ dadosPolitico?.vote_number || '0' }}</h3>
   </header>
 
   @if(!messages.length) {
