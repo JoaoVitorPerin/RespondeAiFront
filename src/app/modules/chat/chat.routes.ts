@@ -11,4 +11,9 @@ export const CHAT_ROUTES: Routes = [
     loadComponent: () =>
       import('./chat.component').then(c => c.ChatComponent),
   },
+  {
+    path: '',
+    redirectTo: '',
+    pathMatch: 'full'
+  }
 ];

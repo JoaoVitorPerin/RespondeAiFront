@@ -11,9 +11,4 @@ export const AUTH_ROUTES: Routes = [
     loadComponent: () =>
       import('./cadastro/cadastro.component').then(c => c.CadastroComponent),
   },
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
-  }
 ];

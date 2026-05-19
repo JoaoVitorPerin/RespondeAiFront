@@ -10,10 +10,9 @@ export const routes: Routes = [
     },
     {
         path: 'chat',
-        canActivate: [authGuard],
         loadChildren: () =>
             import('./modules/chat/chat.routes').then(m => m.CHAT_ROUTES),
     },
-    { path: '', pathMatch: 'full', redirectTo: 'login' },
-    { path: '**', redirectTo: 'login' },
+    { path: '', pathMatch: 'full', redirectTo: 'chat' },
+    { path: '**', redirectTo: 'chat' },
 ];

@@ -1,22 +1,44 @@
+@if(!isModalUsuarioOpen) {
 <div class="h-screen bg-base-200 flex">
-  <app-asider-bar-salas 
-    [rooms]="rooms" 
-    [selectedRoom]="selectedRoom" 
-    (roomSelected)="selectRoom($event)" 
-    (roomDeselected)="deselectedRoom()">
-  </app-asider-bar-salas>
   <app-chat-box
     class="w-full"
-    [userName]="userName"
-    [selectedRoom]="selectedRoom"
-    [messages]="messages"
-    [rooms]="rooms"
-    (deletarSalaEvent)="deletarSala($event)">
+    [nomeCompleto]="nomeCompleto"
+    [numeroTelefone]="numeroTelefone">
   </app-chat-box>
-  @if(selectedRoom){
-    <app-side-bar-membros 
-      [selectedRoom]="selectedRoom">
-    </app-side-bar-membros>
-  }
 </div>
+}
 
+<dialog class="modal" [open]="isModalUsuarioOpen">
+  <div class="modal-box">
+    <h3 class="text-xl font-bold">Olá, Bem-vindo 👋</h3>
+      <p class="opacity-70">
+        Digite seu nome completo e número de telefone para começar.
+      </p>
+      <p class="opacity-70 mt-7">Digite seu nome:</p>
+
+      <input
+        type="text"
+        placeholder="Nome completo"
+        class="input input-bordered w-full mt-1"
+        [(ngModel)]="nomeCompleto"
+        name="nomeCompleto"
+      />
+
+      <p class="opacity-70 mt-5">Digite seu número de telefone:</p>
+      <input
+        type="text"
+        placeholder="Número de telefone"
+        class="input input-bordered w-full mt-1"
+        [(ngModel)]="numeroTelefone"
+        name="numeroTelefone"
+      />
+      <div class="modal-action">
+        <button
+          class="btn btn-sm btn-primary"
+          (click)="salvarUsuario()"
+        >
+          Salvar
+        </button>
+      </div>
+  </div>
+</dialog>

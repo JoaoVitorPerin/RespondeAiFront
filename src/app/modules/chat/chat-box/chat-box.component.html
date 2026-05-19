@@ -1,182 +1,121 @@
-<main class="flex-1 flex flex-col h-screen w-full bg-base-200">
-  <header class="h-14 bg-base-100 border-b border-base-300 flex items-center px-4">
-    @if(selectedRoom){
-      <div class="flex items-center justify-between w-full">
-        <h2 class="font-semibold text-lg" >
-          # {{ selectedRoom.name }}
-        </h2>
-        <div class="flex gap-2">
-        @if(selectedRoom.role === 'ADMIN'){
-          <button class="btn btn-sm btn-info" (click)="openModalEditarSala(selectedRoom.name)">
-            Editar
-          </button>
-          <button class="btn btn-sm btn-error" (click)="openModalDeletarSala()">
-            Deletar
-          </button>
-        }@else{
-          <button class="btn btn-sm btn-error" (click)="openModalSairSala()">
-            Sair
-          </button>
-        }
-        </div>
-      </div>
-    }@else{
-      <h2 class="font-semibold text-lg opacity-70">Selecione uma sala</h2>
-    }
+<div class="flex-1 flex h-screen w-full justify-center">
+  <main class="flex flex-col h-screen w-full max-w-4xl">
+  <header class="h-12 border-b flex items-center justify-between px-4 sticky top-0">
+    <h2 class="font-medium text-2xl">Chat do Vereador</h2>
+    <h3 class="font-medium text-2xl">Número: 2929</h3>
   </header>
 
-  @if(!selectedRoom){
+  @if(!messages.length) {
     <section class="flex-1 grid place-items-center p-6">
-      <div class="max-w-md text-center space-y-3">
-        <h3 class="text-xl font-bold">Bem-vindo, {{ userName }} 👋</h3>
-        <p class="opacity-70">
-          Escolha uma sala na lateral para começar a conversar,
-          ou crie uma nova sala no botão <b>+</b>.
+      <div class="max-w-md text-center space-y-4">
+        <div class="text-4xl">💬</div>
+        <h3 class="text-3xl font-semibold">Bem-vindo ao Chat</h3>
+        <p class="text-base leading-relaxed">
+          Digite uma mensagem abaixo para começar a conversar com o Vereador.
         </p>
       </div>
-    </section>
+    </section>  
   }
 
-  @if(selectedRoom){
-    <section class="flex-1 overflow-y-auto p-4 space-y-3" #list>
-      @for(message of messages; track message){
-        <div class="flex gap-3" [class.justify-end]="message.userName === userName">
+  <section 
+    class="flex-1 overflow-y-auto px-4 py-6 space-y-4 relative" 
+    id="message-list" 
+    #list
+    (scroll)="onMessageListScroll($event)"
+  >
+    @if(showScrollToTop) {
+      <button 
+        class="fixed bottom-24 right-54 bg-blue-500 hover:bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-200"
+        (click)="scrollToBottom()"
+        style="z-index: 1000;"
+        title="Ir para a mensagem mais nova"
+      >
+        ↓
+      </button>
+    }
 
-          @if(message.userName !== userName){
-            <div class="avatar placeholder">
-              <div class="bg-neutral text-neutral-content rounded-full w-8">
-                <span>{{ (message.userName || '?')[0] }}</span>
-              </div>
+    @for(message of messages; track message){
+      <div class="flex gap-3" [class.flex-row-reverse]="message.sender === 'user'">
+        
+        @if(message.sender === 'user'){
+          <div class="avatar placeholder flex-shrink-0">
+            <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-semibold">
+              {{ (nomeCompleto || '?')[0].toUpperCase() }}
+            </div>
+          </div>
+        }
+        
+        @if(message.sender !== 'user'){
+          <div class="avatar flex-shrink-0">
+            <div class="bg-gray-300 rounded-full w-8 h-8 flex items-center justify-center">
+              <span class="text-lg">👨‍⚖️</span>
+            </div>
+          </div>
+        }
+
+        <div>
+          @if(message.sender !== 'user'){
+            <div class="text-sm font-medium mb-1">
+              Vereador
             </div>
           }
-
-          <div [class.text-right]="message.userName === userName">
-            <div class="text-sm font-semibold">
-              {{ message.userName }}
-              <span class="text-xs opacity-60 ml-1">
-                {{ message.ts ? (message.ts | date:'HH:mm') : '' }}
-              </span>
-            </div>
-
-            <div
-              class="text-sm opacity-90 chat-text"
-              [class.bg-base-300]="message.userName === userName"
-              [class.rounded-lg]="message.userName === userName"
-              [class.px-3]="message.userName === userName"
-              [class.py-1]="message.userName === userName"
-              [class.inline-block]="message.userName === userName"
-            >
-              {{ message.text }}
-            </div>
+          
+          <div
+            class="text-base leading-relaxed rounded-lg px-4 py-2"
+            [class.inline-block]="message.sender === 'user'"
+            [class.bg-blue-500]="message.sender === 'user'"
+            [class.text-white]="message.sender === 'user'"
+          >
+            {{ message.text }}
           </div>
         </div>
-      }
-    </section>
-
-    <footer class="p-3 bg-base-100 border-t border-base-300">
-      <div class="flex gap-2">
-        <textarea
-          class="input input-bordered w-full bg-base-200 resize-none overflow-hidden"
-          [(ngModel)]="text"
-          (input)="autoResize($event)"
-          (keydown.enter)="sendMessage()"
-          placeholder="Digite uma mensagem..."
-        ></textarea>
-        <button class="btn btn-neutral" (click)="sendMessage()">
-          Enviar
-        </button>
       </div>
-    </footer>
-  }
-</main>
+    }
 
-<dialog class="modal" [open]="isModalEditarOpen">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold mb-3">Editar sala</h3>
-    <p class="opacity-70">Digite o nome da sala editada.</p>
-
-    <input
-      type="text"
-      placeholder="Nome da sala"
-      class="input input-bordered w-full mt-3"
-      [(ngModel)]="nomeSala"
-      name="nomeSala"
-    />
-
-    <p class="opacity-70 mt-7">Adicione membros à sala</p>
-
-    <div class="flex items-end gap-3">
-      <input
-        type="text"
-        placeholder="Email do membro"
-        class="input input-bordered w-full mt-3"
-        [(ngModel)]="emailMembro"
-        name="emailMembro"
-      />
-      <button class="btn btn-primary" (click)="adicionarMembroSala()">
-        +
-      </button>
-    </div>
-
-    <div>
-      <p class="font-bold mt-5 mb-2">Membros adicionados:</p>
-      <div class="max-h-32 overflow-y-auto">
-        @for(membro of membrosSala; track membro){
-          <div class="flex align-center justify-between border border-base-300 rounded-md p-3 mb-2">
-            <p>{{ membro }}</p>
-            <button
-              class="btn btn-sm btn-error"
-              (click)="removerMembroSala(membro)"
-            >Remover</button>
+    @if(exibirLoader) {
+      <div class="flex gap-3">
+        <div class="avatar flex-shrink-0">
+          <div class=" rounded-full w-8 h-8 flex items-center justify-center">
+            <span class="text-lg">👨‍⚖️</span>
           </div>
-        }
-        @if(membrosSala.length === 0){
-          <div class="opacity-60">Nenhum membro adicionado ainda.</div>
-        }
+        </div>
+
+        <div>
+          <div class="text-sm font-medium mb-1">
+            Vereador
+          </div>
+          
+          <div class="flex gap-1 rounded-lg px-4 py-3">
+            <span class="inline-block w-2 h-2 bg-gray-500 rounded-full animate-bounce"></span>
+            <span class="inline-block w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+            <span class="inline-block w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+          </div>
+        </div>
       </div>
-    </div>
+    }
+  </section>
 
-    <div class="modal-action">
-      <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
-      <button
-        class="btn btn-sm btn-primary"
-        (click)=" editarSala()"
-        [disabled]="!nomeSala"
+  <footer class="px-4 py-4 border-t">
+    <div class="flex gap-2 items-end">
+      <textarea
+        class="flex-1 resize-none overflow-hidden px-3 py-2 border rounded-lg text-base focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+        [(ngModel)]="textoMensagem"
+        (input)="autoResize($event)"
+        (keydown.enter)="sendMessage($event)"
+        placeholder="Envie uma mensagem..."
+        rows="1"
+        [disabled]="exibirLoader"
+      ></textarea>
+      <button 
+        [class.opacity-50]="exibirLoader"
+        [class.cursor-not-allowed]="exibirLoader"
+        class="flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-4 py-2 font-medium text-base transition-colors disabled:hover:bg-blue-500" 
+        [disabled]="exibirLoader"
+        (click)="sendMessage($event)"
       >
-        Editar
+        {{ exibirLoader ? 'Pensando...' : 'Enviar' }}
       </button>
     </div>
-  </div>
-</dialog>
-
-<dialog class="modal" [open]="isModalDeletarSalaOpen">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold mb-3">Deletar sala</h3>
-    <p class="opacity-70">Tem certeza que deseja excluir permanentemente a sala <b>{{ selectedRoom?.name }}</b>?</p>
-    <div class="modal-action">
-      <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
-      <button
-        class="btn btn-sm btn-primary"
-        (click)="deletarSala()"
-      >
-        Deletar
-      </button>
-    </div>
-  </div>
-</dialog>
-
-<dialog class="modal" [open]="isModalSairSalaOpen">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold mb-3">Sair da sala</h3>
-    <p class="opacity-70">Tem certeza que deseja sair da sala <b>{{ selectedRoom?.name }}</b>?</p>
-    <div class="modal-action">
-      <button class="btn btn-sm" (click)="closeModal()">Fechar</button>
-      <button
-        class="btn btn-sm btn-primary"
-        (click)="sairDaSala()"
-      >
-        Sair
-      </button>
-    </div>
-  </div>
-</dialog>
+  </footer>
+  </main>
+</div>

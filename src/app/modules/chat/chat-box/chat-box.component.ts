@@ -6,6 +6,7 @@ import { RoomDTO } from '../../../../shared/interfaces/room';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../../../shared/components/toastr/toastr.service';
 import { Subscription } from 'rxjs';
+import { ApiChatService } from '../../../../shared/services/apiChat.service';
 
 @Component({
   selector: 'app-chat-box',
@@ -18,39 +19,37 @@ import { Subscription } from 'rxjs';
   ]
 })
 export class ChatBoxComponent implements OnInit {
-  private readonly socketService = inject(SocketService);
+  private readonly apiChatService = inject(ApiChatService);
   private readonly toastService = inject(ToastService);
 
-  @Input() userName: string = '';
-  @Input() selectedRoom: RoomDTO | null = null;
-  @Input() messages: ChatMessage[] = [];
-  @Input() rooms: RoomDTO[] = [];
+  @Input() nomeCompleto: string = '';
+  @Input() numeroTelefone: string = '';
 
-  nomeSala: string = '';
-  emailMembro: string = '';
-  membrosSala: string[] = [];
-  text: string = '';
-
-  isModalEditarOpen = false;
-  isModalDeletarSalaOpen = false;
-  isModalSairSalaOpen = false;
+  textoMensagem = '';
+  messages: any[] = [];
+  showScrollToTop = false;
+  exibirLoader = false;
 
   subs: Subscription[] = [];
 
-  @Output() deletarSalaEvent = new EventEmitter<RoomDTO>();
-
   ngOnInit(): void {
-    this.subs.push(
-      this.socketService.onRemoveMemberFromRoom().subscribe((res) => {
-        if (!res.ok) {
-          this.toastService.error(res.message || 'Erro ao sair da sala.');
-          return;
-        }
-
-        this.toastService.success('Você saiu da sala com sucesso.');
-        this.isModalSairSalaOpen = false;
-      })
-    );
+    this.apiChatService.buscarMensagens(this.numeroTelefone).subscribe({
+      next: (res) => {
+        this.messages = res.map((m: any) => ({
+          text: m.content,
+          sender: m.role === 'user' ? 'user' : 'assistant'
+        }));
+        setTimeout(() => {
+          const list = document.getElementById('message-list');
+          if (list) {
+            list.scrollTop = list.scrollHeight;
+          }
+        }, 100);
+      },
+      error: (err) => {
+        this.toastService.show('error', 'Erro ao carregar mensagens. Tente novamente.');
+      }
+    });
   }
 
   autoResize(event: Event) {
@@ -59,79 +58,55 @@ export class ChatBoxComponent implements OnInit {
     textarea.style.height = textarea.scrollHeight + 'px';
   }
 
-  openModalEditarSala(nomeSalaEdicao: string) {
-    this.nomeSala = nomeSalaEdicao || '';
-    this.membrosSala = this.selectedRoom!.members.map(m => m.email && m.role !== 'ADMIN' ? m.email : '').filter(email => email);
-    this.isModalEditarOpen = true;
+  onMessageListScroll(event: Event) {
+    const element = event.target as HTMLElement;
+    // Mostrar botão quando não estiver no final
+    this.showScrollToTop = element.scrollHeight - element.scrollTop - element.clientHeight > 100;
   }
 
-  openModalDeletarSala() {
-    this.isModalDeletarSalaOpen = true;
+  scrollToBottom() {
+    const messageList = document.getElementById('message-list');
+    if (messageList) {
+      messageList.scrollTo({ top: messageList.scrollHeight, behavior: 'smooth' });
+    }
   }
 
-  openModalSairSala() {
-    this.isModalSairSalaOpen = true;
-  }
-
-  closeModal() {
-    this.nomeSala = '';
-    this.isModalEditarOpen = false;
-    this.isModalDeletarSalaOpen = false;
-    this.isModalSairSalaOpen = false;
-    this.membrosSala = [];
-    this.emailMembro = '';
-  }
-
-  deletarSala() {
-    if (!this.selectedRoom) return;
-    
-    this.socketService.deleteRoom(this.selectedRoom.id);
-    this.closeModal();
-    this.deletarSalaEvent.emit(this.selectedRoom);
-  }
-
-  sairDaSala() {
-    if (!this.selectedRoom) return;
-
-    this.socketService.removeMemberFromRoom(this.selectedRoom.id, this.userName);
-  }
-
-  editarSala(){
-    if (!this.selectedRoom) return;
-    
-    const name = this.nomeSala.trim();
-    if (!name) return;
-
-    this.socketService.editRoom(this.selectedRoom.id, name, this.membrosSala);
-    this.closeModal();
-    this.selectedRoom.name = name;
-  }
-
-  sendMessage() {
-    if (!this.selectedRoom) return;
-    const msg = this.text.trim();
+  sendMessage(evento: Event) {
+    evento.preventDefault();
+    const msg = this.textoMensagem.trim();
     if (!msg) return;
 
-    this.socketService.sendMessage(this.selectedRoom.id, msg);
-    this.text = '';
-  }
+    this.exibirLoader = true;
 
-  adicionarMembroSala(){
-    const email = this.emailMembro.trim();
+    this.messages.push({
+      text: msg,
+      sender: 'user'
+    });
 
-    if (!email) return;
+    this.apiChatService.mensagem({
+      phone: this.numeroTelefone,
+      mensagem: msg
+    }).subscribe({
+      next: (res) => {
+        this.messages.push({
+          text: res.resposta,
+          sender: 'assistant'
+        });
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      this.toastService.error('Digite um email válido.');
-      return;
-    }
-
-    this.membrosSala.push(email);
-    this.emailMembro = '';
-  }
-
-  removerMembroSala(email: string) {
-    this.membrosSala = this.membrosSala.filter(m => m !== email);
+        setTimeout(() => {
+          const list = document.getElementById('message-list');
+          if (list) {
+            list.scrollTop = list.scrollHeight;
+          }
+        }, 100);
+      },
+      error: (err) => {
+        this.toastService.show('error', 'Erro ao enviar mensagem. Tente novamente.');
+      },
+      complete: () => {
+        this.exibirLoader = false;
+      }
+    });
+    this.textoMensagem = '';
   }
 }
