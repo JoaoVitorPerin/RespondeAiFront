@@ -11,16 +11,22 @@
     </header>
 
     <!-- Info Section -->
-    <div class="px-6 py-4">
+    <div class="px-6 py-4 cursor-pointer transition-colors" (click)="toggleInfoSection()">
       <div class="mx-auto">
         <div class="flex items-start gap-3">
           <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
           </svg>
-          <div>
-            <p class="text-sm leading-relaxed">
-              A <span class="font-semibold">Base de Conhecimento</span> é o local onde você cadastra informações que a IA utilizará para responder os cidadãos com mais precisão. Aqui você pode adicionar propostas, projetos, posicionamentos, ações do mandato, informações do bairro, eventos, pautas e qualquer conteúdo importante relacionado ao seu trabalho político. Quanto mais completa e organizada estiver sua base, melhores e mais confiáveis serão as respostas do assistente virtual.
-            </p>
+          <div class="flex-1">
+            @if(infoSectionExpanded) {
+              <p class="text-sm leading-relaxed">
+                A <span class="font-semibold">Base de Conhecimento</span> é o local onde você cadastra informações que a IA utilizará para responder os cidadãos com mais precisão. Aqui você pode adicionar propostas, projetos, posicionamentos, ações do mandato, informações do bairro, eventos, pautas e qualquer conteúdo importante relacionado ao seu trabalho político. Quanto mais completa e organizada estiver sua base, melhores e mais confiáveis serão as respostas do assistente virtual.
+              </p>
+            } @else {
+              <p class="text-sm truncate">
+                A <span class="font-semibold">Base de Conhecimento</span> é o local onde você cadastra...
+              </p>
+            }
           </div>
         </div>
       </div>
@@ -119,7 +125,7 @@
        </button>
        <button 
          class="btn btn-sm"
-         (click)="isModalConfirmacaoOpen = false; conhecimentoIdParaDeletar = '';">
+         (click)="isModalConfirmacaoOpen = false; conhecimentoIdParaDeletar = ''; conhecimentoIsNew = false;">
          Não
        </button>
      </div>

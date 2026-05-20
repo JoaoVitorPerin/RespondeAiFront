@@ -1,8 +1,10 @@
+import { ToastService } from './../../../shared/components/toastr/toastr.service';
 import { TokenService } from './../../../shared/services/token.service';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { SidebarComponent, MenuItem } from '../../../shared/components/sidebar/sidebar.component';
 import { RouterModule } from '@angular/router';
+import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-home',
@@ -16,19 +18,62 @@ import { RouterModule } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
   private readonly tokenService = inject(TokenService);
+  private toastService = inject(ToastService);
+  
+  @ViewChild('qrcodeCanvas') qrcodeCanvas!: ElementRef<HTMLCanvasElement>;
+
+  linkChat = '';
+  qrcodeGerado = false;
+
   constructor() { }
 
   ngOnInit() {
+    this.gerarQRCode();
   }
 
-  gerarLink() {
+  gerarQRCode() {
     const user = JSON.parse(this.tokenService.getUser());
+    this.linkChat = `${window.location.origin}/chat/${user.chatHash}`;
+    
+    setTimeout(() => {
+      if (this.qrcodeCanvas) {
+        QRCode.toCanvas(
+          this.qrcodeCanvas.nativeElement,
+          this.linkChat,
+          {
+            width: 250,
+            margin: 2,
+            color: {
+              dark: '#0d1014',
+              light: '#ffffff'
+            }
+          },
+          (error: any) => {
+            if (error) {
+              this.toastService.show('error','Erro ao gerar QR Code');
+            } else {
+              this.qrcodeGerado = true;
+            }
+          }
+        );
+      }
+    }, 100);
+  }
 
-    const link = `${window.location.origin}/chat/${user.chatHash}`;
-    navigator.clipboard.writeText(link).then(() => {
-      alert('Link copiado para a área de transferência!');
+  baixarQRCode() {
+    if (this.qrcodeCanvas) {
+      const link = document.createElement('a');
+      link.href = this.qrcodeCanvas.nativeElement.toDataURL('image/png');
+      link.download = 'qrcode-chat.png';
+      link.click();
+    }
+  }
+
+  copiarLink() {
+    navigator.clipboard.writeText(this.linkChat).then(() => {
+      this.toastService.show('success','Link copiado para a área de transferência!');
     }, (err) => {
-      alert('Erro ao copiar o link: ' + err);
+      this.toastService.show('error','Erro ao copiar o link: ' + err);
     });
   }
 

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "chatOnlineFront": {
+    "RespondeAI": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "chatOnlineFront:build:production"
+              "buildTarget": "RespondeAI:build:production"
             },
             "development": {
-              "buildTarget": "chatOnlineFront:build:development"
+              "buildTarget": "RespondeAI:build:development"
             }
           },
           "defaultConfiguration": "development"

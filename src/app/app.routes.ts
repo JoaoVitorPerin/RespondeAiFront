@@ -26,12 +26,6 @@ export const routes: Routes = [
             import('./modules/base-conhecimento/base-conhecimento.routes').then(m => m.BASE_CONHECIMENTO_ROUTES),
     },
     {
-        path: 'relatorios',
-        canActivate: [authGuard],
-        loadChildren: () =>
-            import('./modules/relatorios/relatorios.routes').then(m => m.RELATORIOS_ROUTES),
-    },
-    {
         path: 'configuracoes',
         canActivate: [authGuard],
         loadChildren: () =>

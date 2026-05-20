@@ -52,8 +52,13 @@ export class ConfiguracoesComponent implements OnInit {
   ];
 
   fotoPreview: string | null = null;
+  infoSectionExpanded = true;
 
   constructor() { }
+  
+  toggleInfoSection() {
+    this.infoSectionExpanded = !this.infoSectionExpanded;
+  }
 
   ngOnInit() {
     this.carregarDados();

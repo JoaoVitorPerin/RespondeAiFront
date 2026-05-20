@@ -38,8 +38,15 @@ export class BaseConhecimentoComponent implements OnInit {
 
   isModalConfirmacaoOpen = false;
   conhecimentoIdParaDeletar = '';
+  conhecimentoIsNew = false;
+  
+  infoSectionExpanded = true;
 
   constructor() { }
+  
+  toggleInfoSection() {
+    this.infoSectionExpanded = !this.infoSectionExpanded;
+  }
 
   ngOnInit() {
     this.idPolitico = JSON.parse(this.tokenService.getUser()).id;
@@ -95,6 +102,17 @@ export class BaseConhecimentoComponent implements OnInit {
   }
 
   deletarConhecimento() {
+    // Se for um conhecimento novo (não salvo), apenas remove da lista
+    if (this.conhecimentoIsNew) {
+      this.conhecimentos = this.conhecimentos.filter(k => k.id !== this.conhecimentoIdParaDeletar);
+      this.toastService.show('success', 'Conhecimento removido.');
+      this.isModalConfirmacaoOpen = false;
+      this.conhecimentoIdParaDeletar = '';
+      this.conhecimentoIsNew = false;
+      return;
+    }
+
+    // Se for um conhecimento já salvo, faz a requisição para o back-end
     this.baseConhecimentoService.deletarConhecimento(this.conhecimentoIdParaDeletar, this.idPolitico).subscribe({
       next: (response) => {
         this.toastService.show('success', 'Conhecimento deletado com sucesso.');
@@ -106,6 +124,7 @@ export class BaseConhecimentoComponent implements OnInit {
       complete: () => {
         this.isModalConfirmacaoOpen = false;
         this.conhecimentoIdParaDeletar = '';
+        this.conhecimentoIsNew = false;
       }
     });
   }
@@ -147,7 +166,9 @@ export class BaseConhecimentoComponent implements OnInit {
   }
 
   abrirModalConfirmacao(conhecimentoId: string) {
+    const conhecimento = this.conhecimentos.find(k => k.id === conhecimentoId);
     this.conhecimentoIdParaDeletar = conhecimentoId;
+    this.conhecimentoIsNew = conhecimento?.isNew || false;
     this.isModalConfirmacaoOpen = !this.isModalConfirmacaoOpen;
   }
 }
