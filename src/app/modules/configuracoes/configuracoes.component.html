@@ -71,6 +71,7 @@
                 <input
                   id="email"
                   [(ngModel)]="formulario.email"
+                  (input)="validarEmail($event)"
                   type="email"
                   placeholder="Digite seu email"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200">
@@ -82,9 +83,11 @@
                 <input
                   id="phone"
                   [(ngModel)]="formulario.phone"
+                  (input)="formatarTelefone($event)"
                   type="tel"
                   placeholder="(XX) XXXXX-XXXX"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200">
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200"
+                  maxlength="15">
               </div>
 
               <!-- Partido -->

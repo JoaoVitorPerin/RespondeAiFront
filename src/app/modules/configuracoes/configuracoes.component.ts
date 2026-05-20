@@ -117,6 +117,11 @@ export class ConfiguracoesComponent implements OnInit {
       return;
     }
 
+    if (!this.isEmailValido(this.formulario.email)) {
+      this.toastService.show('error','Email inválido');
+      return;
+    }
+
     if (!this.formulario.office.trim()) {
       this.toastService.show('error','Cargo é obrigatório');
       return;
@@ -131,6 +136,52 @@ export class ConfiguracoesComponent implements OnInit {
       }
     });
 
+  }
+
+  // Formata o telefone em tempo real para (xx) xxxxx-xxxx com máximo 11 dígitos
+  formatarTelefone(event: any): void {
+    let valor = event.target.value;
+    
+    // Remove tudo que não é número
+    let numeroLimpo = valor.replace(/\D/g, '');
+    
+    // Limita a 11 dígitos (padrão brasileiro)
+    numeroLimpo = numeroLimpo.substring(0, 11);
+    
+    // Aplica a formatação (xx) xxxxx-xxxx
+    let telefonFormatado = '';
+    if (numeroLimpo.length > 0) {
+      if (numeroLimpo.length <= 2) {
+        telefonFormatado = numeroLimpo.length === 1 ? `(${numeroLimpo}` : `(${numeroLimpo}`;
+      } else if (numeroLimpo.length <= 7) {
+        telefonFormatado = `(${numeroLimpo.substring(0, 2)}) ${numeroLimpo.substring(2)}`;
+      } else {
+        telefonFormatado = `(${numeroLimpo.substring(0, 2)}) ${numeroLimpo.substring(2, 7)}-${numeroLimpo.substring(7, 11)}`;
+      }
+    }
+    
+    // Atualiza o valor do input e do componente
+    event.target.value = telefonFormatado;
+    this.formulario.phone = telefonFormatado;
+  }
+
+  // Valida se o email é válido
+  isEmailValido(email: string): boolean {
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regexEmail.test(email);
+  }
+
+  // Monitora o input de email e valida em tempo real
+  validarEmail(event: any): void {
+    let valor = event.target.value;
+    this.formulario.email = valor;
+    
+    // Opcional: você pode adicionar feedback visual aqui
+    if (valor && !this.isEmailValido(valor)) {
+      event.target.classList.add('is-invalid');
+    } else {
+      event.target.classList.remove('is-invalid');
+    }
   }
 
 }

@@ -83,4 +83,47 @@ export class ChatComponent implements OnInit, OnDestroy {
   closeModal() {
     this.isModalUsuarioOpen = false;
   }
+
+  // Valida o nome em tempo real - apenas letras e espaços, máximo 40 caracteres
+  validarNome(event: any): void {
+    let valor = event.target.value;
+    
+    // Remove números e símbolos, mantém apenas letras e espaços
+    let nomeValidado = valor.replace(/[^a-záéíóúâêôãõçA-ZÁÉÍÓÚÂÊÔÃÕÇ\s ]/g, '');
+    
+    // Limita a 40 caracteres
+    nomeValidado = nomeValidado.substring(0, 40);
+    
+    // Atualiza o valor do input e do componente
+    event.target.value = nomeValidado;
+    this.nomeCompleto = nomeValidado;
+  }
+
+  // Formata o telefone em tempo real para (xx) xxxxx-xxxx com máximo 11 dígitos
+  formatarTelefone(event: any): void {
+    let valor = event.target.value;
+    
+    // Remove tudo que não é número
+    let numeroLimpo = valor.replace(/\D/g, '');
+    
+    // Limita a 11 dígitos (padrão brasileiro)
+    numeroLimpo = numeroLimpo.substring(0, 11);
+    
+    // Aplica a formatação (xx) xxxxx-xxxx
+    let telefonFormatado = '';
+    if (numeroLimpo.length > 0) {
+      if (numeroLimpo.length <= 2) {
+        telefonFormatado = numeroLimpo.length === 1 ? `(${numeroLimpo}` : `(${numeroLimpo}`;
+      } else if (numeroLimpo.length <= 7) {
+        telefonFormatado = `(${numeroLimpo.substring(0, 2)}) ${numeroLimpo.substring(2)}`;
+      } else {
+        telefonFormatado = `(${numeroLimpo.substring(0, 2)}) ${numeroLimpo.substring(2, 7)}-${numeroLimpo.substring(7, 11)}`;
+      }
+    }
+    
+    // Atualiza o valor do input e do componente
+    event.target.value = telefonFormatado;
+    this.numeroTelefone = telefonFormatado;
+  }
 }
+

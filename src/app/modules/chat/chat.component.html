@@ -22,16 +22,20 @@
         placeholder="Nome completo"
         class="input input-bordered w-full mt-1"
         [(ngModel)]="nomeCompleto"
+        (input)="validarNome($event)"
         name="nomeCompleto"
+        maxlength="40"
       />
 
       <p class="opacity-70 mt-5">Digite seu número de telefone:</p>
       <input
         type="text"
-        placeholder="Número de telefone"
+        placeholder="(00) 00000-0000"
         class="input input-bordered w-full mt-1"
         [(ngModel)]="numeroTelefone"
+        (input)="formatarTelefone($event)"
         name="numeroTelefone"
+        maxlength="15"
       />
       <div class="modal-action">
         <button
