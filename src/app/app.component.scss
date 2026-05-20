@@ -10,3 +10,10 @@
   display: flex;
   flex-direction: column;
 }
+
+/* Ajuste para mobile com bottom nav */
+@media (max-width: 768px) {
+  .app-content {
+    padding-bottom: 70px; /* Altura do bottom nav */
+  }
+}

@@ -6,7 +6,7 @@
       <button 
         (click)="adicionarConhecimento()"
         class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
-        + Adicionar Conhecimento
+        Adicionar
       </button>
     </header>
 
@@ -56,7 +56,7 @@
             <div class="flex items-center gap-2">
               <button
                 *ngIf="!conhecimento.expanded"
-                (click)="deletarConhecimento(conhecimento.id); $event.stopPropagation()"
+                (click)="abrirModalConfirmacao(conhecimento.id); $event.stopPropagation()"
                 class="text-red-600 hover:text-red-800 font-medium text-sm transition duration-200 px-3 py-1 hover:bg-red-50 rounded">
                 Deletar
               </button>
@@ -91,7 +91,7 @@
             <div class="flex gap-3 justify-end">
               <button
                 (click)="cancelarEdicao(conhecimento)"
-                class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition duration-200">
+                class="px-6 py-2 border border-gray-300 font-medium rounded-lg hover:bg-gray-50 transition duration-200">
                 Cancelar
               </button>
               <button
@@ -106,3 +106,22 @@
     </div>
   </main>
 </div>
+
+<dialog class="modal" [open]="isModalConfirmacaoOpen">
+   <div class="modal-box">
+     <h3 class="text-xl font-bold">Confirmação</h3>
+     <p class="py-4">Tem certeza que deseja deletar este conhecimento?</p>
+     <div class="modal-action">
+       <button 
+         class="btn btn-sm btn-primary"
+         (click)="deletarConhecimento()">
+         Sim
+       </button>
+       <button 
+         class="btn btn-sm"
+         (click)="isModalConfirmacaoOpen = false; conhecimentoIdParaDeletar = '';">
+         Não
+       </button>
+     </div>
+   </div>
+</dialog>

@@ -31,6 +31,9 @@ export class AppComponent implements OnInit, OnDestroy {
   isShowSideBar = false;
   sidebarOpen = true;
 
+  // Rotas onde o sidebar deve ser exibido
+  private routesWithSidebar = ['home', 'base-conhecimento', 'relatorios', 'configuracoes'];
+
   menuItems: MenuItem[] = [
     {
       id: 'home',
@@ -43,12 +46,6 @@ export class AppComponent implements OnInit, OnDestroy {
       label: 'Base de Conhecimento',
       icon: '📚',
       route: '/base-conhecimento'
-    },
-    {
-      id: 'relatorios',
-      label: 'Relatórios',
-      icon: '📊',
-      route: '/relatorios'
     },
     {
       id: 'configuracoes',
@@ -84,14 +81,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
   checkSideBarHidden(): void {
     const token = localStorage.getItem('token');
-
-    console.log('Token encontrado:', token);
+    const currentRoute = this.router.url.split('/')[1]; // Pega a primeira rota (ex: 'home', 'chat', etc)
 
     this.isShowSideBar =
       !!token &&
       token !== '{}' &&
       token !== 'null' &&
-      token !== 'undefined';
+      token !== 'undefined' &&
+      this.routesWithSidebar.includes(currentRoute);
 
     console.log('isShowSideBar', this.isShowSideBar);
   }

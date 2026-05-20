@@ -34,4 +34,14 @@ export class AutenticacaoService {
       headers: this.headerService.getHeader(),
     });
   }
+
+  editarUsuario(dados: any, idPolitico: string): Observable<any> {
+    this.data = {
+      ...dados,
+    };
+
+    return this.http.put<any>(`${this.API_BACK}politico/${idPolitico}`, this.data, {
+      headers: this.headerService.getHeader(),
+    });
+  }
 }

@@ -1,3 +1,4 @@
+import { ToastService } from './../../../shared/components/toastr/toastr.service';
 import { TokenService } from './../../../shared/services/token.service';
 import { BaseConhecimentoService } from './../../../shared/services/baseConhecimento.service';
 import { Component, inject, OnInit } from '@angular/core';
@@ -30,15 +31,19 @@ interface ConhecimentoEdit {
 export class BaseConhecimentoComponent implements OnInit {
   private readonly baseConhecimentoService = inject(BaseConhecimentoService);
   private readonly tokenService = inject(TokenService);
+  private readonly toastService = inject(ToastService);
 
   conhecimentos: ConhecimentoEdit[] = [];
   idPolitico = '';
+
+  isModalConfirmacaoOpen = false;
+  conhecimentoIdParaDeletar = '';
 
   constructor() { }
 
   ngOnInit() {
     this.idPolitico = JSON.parse(this.tokenService.getUser()).id;
-    console.log(this.tokenService.getUser());
+    
     this.carregarConhecimentos();
   }
 
@@ -56,7 +61,7 @@ export class BaseConhecimentoComponent implements OnInit {
         }));
       },
       error: (err) => {
-        console.error('Erro ao carregar conhecimentos:', err);
+        this.toastService.show('error', 'Não foi possível carregar os conhecimentos.');
       }
     });
   }
@@ -89,18 +94,20 @@ export class BaseConhecimentoComponent implements OnInit {
     conhecimento.expanded = false;
   }
 
-  deletarConhecimento(id: string) {
-    if (confirm('Tem certeza que deseja deletar este conhecimento?')) {
-      this.baseConhecimentoService.deletarConhecimento(id, this.idPolitico).subscribe({
-        next: (response) => {
-          console.log('Conhecimento deletado com sucesso:', response);
-          this.carregarConhecimentos();
-        },
-        error: (err) => {
-          console.error('Erro ao deletar conhecimento:', err);
-        }
-      });
-    }
+  deletarConhecimento() {
+    this.baseConhecimentoService.deletarConhecimento(this.conhecimentoIdParaDeletar, this.idPolitico).subscribe({
+      next: (response) => {
+        this.toastService.show('success', 'Conhecimento deletado com sucesso.');
+        this.carregarConhecimentos();
+      },
+      error: (err) => {
+        this.toastService.show('error', 'Não foi possível deletar o conhecimento.');
+      },
+      complete: () => {
+        this.isModalConfirmacaoOpen = false;
+        this.conhecimentoIdParaDeletar = '';
+      }
+    });
   }
 
   editarConhecimento(conhecimento: ConhecimentoEdit) {
@@ -112,11 +119,11 @@ export class BaseConhecimentoComponent implements OnInit {
       content: conhecimento.conteudo
     }).subscribe({
       next: (response) => {
-        console.log('Conhecimento editado com sucesso:', response);
+        this.toastService.show('success', 'Conhecimento editado com sucesso.');
         this.carregarConhecimentos();
       },
       error: (err) => {
-        console.error('Erro ao editar conhecimento:', err);
+        this.toastService.show('error', 'Não foi possível editar o conhecimento.');
       }
     });
   }
@@ -130,12 +137,17 @@ export class BaseConhecimentoComponent implements OnInit {
       content: conhecimento.conteudo
     }, this.idPolitico).subscribe({
       next: (response) => {
-        console.log('Conhecimento salvo com sucesso:', response);
+        this.toastService.show('success', 'Conhecimento salvo com sucesso.');
         this.carregarConhecimentos();
       },
       error: (err) => {
-        console.error('Erro ao salvar conhecimento:', err);
+        this.toastService.show('error', 'Não foi possível salvar o conhecimento.');
       }
     });
+  }
+
+  abrirModalConfirmacao(conhecimentoId: string) {
+    this.conhecimentoIdParaDeletar = conhecimentoId;
+    this.isModalConfirmacaoOpen = !this.isModalConfirmacaoOpen;
   }
 }

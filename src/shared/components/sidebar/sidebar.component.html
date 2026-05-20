@@ -56,3 +56,28 @@
     </ul>
   </nav>
 </aside>
+
+<!-- Bottom Navigation para Mobile -->
+<nav class="bottom-nav">
+  <ul class="bottom-menu-list">
+    @for(item of items; track item.id) {
+      @if(!item.children?.length) {
+        <li class="bottom-menu-item">
+          <button 
+            class="bottom-menu-link"
+            [routerLink]="item.route"
+            [routerLinkActive]="'router-link-active'"
+            [routerLinkActiveOptions]="{ exact: false }"
+            (click)="onItemClick(item)"
+            [title]="item.label"
+          >
+            @if(item.icon) {
+              <span class="bottom-menu-icon">{{ item.icon }}</span>
+            }
+            <span class="bottom-menu-label">{{ item.label }}</span>
+          </button>
+        </li>
+      }
+    }
+  </ul>
+</nav>
