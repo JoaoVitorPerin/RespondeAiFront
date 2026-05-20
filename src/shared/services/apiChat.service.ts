@@ -20,7 +20,7 @@ export class ApiChatService {
       ...dados,
     };
 
-    return this.http.post<any>(`${this.API_BACK}mensagem`, this.data, {
+    return this.http.post<any>(`${this.API_BACK}mensagens/enviar`, this.data, {
       headers: this.headerService.getHeader().set('X-Skip-Loader', 'true'),
     });
   }
