@@ -1,0 +1,58 @@
+<aside class="sidebar" [class.collapsed]="!isOpen">
+  <div class="sidebar-header">
+    <button class="toggle-btn" (click)="toggleSidebar()" title="Alternar sidebar">
+      ☰
+    </button>
+    <h2 class="sidebar-title" *ngIf="isOpen">Menu</h2>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="menu-list">
+      @for(item of items; track item.id) {
+        <li class="menu-item" [class.has-children]="item.children?.length">
+          <button 
+            class="menu-link"
+            [routerLink]="item.route"
+            [routerLinkActive]="'router-link-active'"
+            [routerLinkActiveOptions]="{ exact: false }"
+            [class.has-submenu]="item.children?.length"
+            (click)="item.children?.length ? toggleExpand(item) : onItemClick(item)"
+            [title]="item.label"
+          >
+            @if(item.icon) {
+              <span class="menu-icon">{{ item.icon }}</span>
+            }
+            @if(isOpen) {
+              <span class="menu-label">{{ item.label }}</span>
+            }
+            @if(item.children?.length && isOpen) {
+              <span class="menu-arrow" [class.expanded]="isExpanded(item)">›</span>
+            }
+          </button>
+
+          @if(item.children?.length && isExpanded(item) && isOpen) {
+            <ul class="submenu">
+              @for(child of item.children; track child.id) {
+                <li class="submenu-item">
+                  <button 
+                    class="submenu-link"
+                    [routerLink]="child.route"
+                    [routerLinkActive]="'router-link-active'"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    (click)="onItemClick(child)"
+                    [title]="child.label"
+                  >
+                    @if(child.icon) {
+                      <span class="submenu-icon">{{ child.icon }}</span>
+                    }
+                    <span class="submenu-label">{{ child.label }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </li>
+      }
+    </ul>
+  </nav>
+</aside>

@@ -29,6 +29,7 @@ export class TokenService {
 
   clearToken(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 
   getJwtDecodedAccess(): any {

@@ -1,6 +1,6 @@
 import { ToastService } from './../../../../shared/components/toastr/toastr.service';
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AutenticacaoService } from '../../../../shared/services/auth.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
   private readonly autenticacaoService = inject(AutenticacaoService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly tokenService = inject(TokenService);
+  private readonly route = inject(ActivatedRoute);
   private readonly toastService = inject(ToastService);
 
   formLogin: FormGroup = new FormGroup({});
@@ -37,15 +38,21 @@ export class LoginComponent implements OnInit {
     this.router.navigate(['/cadastro']);
   }
 
-  login(){
+  login() {
     this.autenticacaoService.login(this.formLogin.getRawValue()).subscribe({
       next: (response) => {
         this.tokenService.setToken(response.token);
         this.tokenService.setUser(JSON.stringify(response.politician));
-        this.router.navigate(['/home']);
+
+        const redirect =
+          this.route.snapshot.queryParamMap.get('redirect');
+
+        this.router.navigate([redirect || '/home']);
       },
       error: (error) => {
-        this.toastService.error(error.error.message || 'Erro ao efetuar login');
+        this.toastService.error(
+          error.error.message || 'Erro ao efetuar login'
+        );
       }
     });
   }

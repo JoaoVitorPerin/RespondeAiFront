@@ -1,3 +1,17 @@
 <app-toastr></app-toastr>
 <app-loader></app-loader>
-<router-outlet></router-outlet>
+
+<div class="app-container">
+    @if(isShowSideBar) {
+        <app-sidebar
+            [items]="menuItems"
+            [isOpen]="sidebarOpen"
+            (itemClicked)="onMenuItemClick($event)"
+            (toggle)="toggleSidebar()"
+        ></app-sidebar>
+    }
+    
+    <main class="app-content">
+        <router-outlet></router-outlet>
+    </main>
+</div>

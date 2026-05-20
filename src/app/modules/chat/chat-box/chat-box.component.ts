@@ -86,7 +86,8 @@ export class ChatBoxComponent implements OnInit {
 
     this.apiChatService.mensagem({
       phone: this.numeroTelefone,
-      mensagem: msg
+      mensagem: msg,
+      idPolitico: this.dadosPolitico.id
     }).subscribe({
       next: (res) => {
         this.messages.push({

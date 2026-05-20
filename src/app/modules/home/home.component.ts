@@ -1,6 +1,8 @@
 import { TokenService } from './../../../shared/services/token.service';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { SidebarComponent, MenuItem } from '../../../shared/components/sidebar/sidebar.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -8,7 +10,8 @@ import { Component, inject, OnInit } from '@angular/core';
   styleUrls: ['./home.component.css'],
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    RouterModule
   ]
 })
 export class HomeComponent implements OnInit {

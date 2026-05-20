@@ -15,8 +15,27 @@ export const routes: Routes = [
     },
     {
         path: 'home',
+        canActivate: [authGuard],
         loadChildren: () =>
             import('./modules/home/home.routes').then(m => m.HOME_ROUTES),
+    },
+    {
+        path: 'base-conhecimento',
+        canActivate: [authGuard],
+        loadChildren: () =>
+            import('./modules/base-conhecimento/base-conhecimento.routes').then(m => m.BASE_CONHECIMENTO_ROUTES),
+    },
+    {
+        path: 'relatorios',
+        canActivate: [authGuard],
+        loadChildren: () =>
+            import('./modules/relatorios/relatorios.routes').then(m => m.RELATORIOS_ROUTES),
+    },
+    {
+        path: 'configuracoes',
+        canActivate: [authGuard],
+        loadChildren: () =>
+            import('./modules/configuracoes/configuracoes.routes').then(m => m.CONFIGURACOES_ROUTES),
     },
     { path: '', pathMatch: 'full', redirectTo: 'chat' },
     { path: '**', redirectTo: 'chat' },
