@@ -15,3 +15,22 @@
         <router-outlet></router-outlet>
     </main>
 </div>
+
+<dialog class="modal" [open]="modalConfirmacaoSair">
+   <div class="modal-box">
+     <h3 class="text-xl font-bold">Confirmação</h3>
+     <p class="py-4">Tem certeza que deseja sair da aplicação?</p>
+     <div class="modal-action">
+       <button 
+         class="btn btn-sm btn-primary"
+         (click)="logout()">
+         Sim
+       </button>
+       <button 
+         class="btn btn-sm"
+         (click)="modalConfirmacaoSair = false;">
+         Não
+       </button>
+     </div>
+   </div>
+</dialog>

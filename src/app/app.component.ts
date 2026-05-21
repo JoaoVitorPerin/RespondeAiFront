@@ -30,6 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isShowSideBar = false;
   sidebarOpen = true;
+  modalConfirmacaoSair = false;
 
   // Rotas onde o sidebar deve ser exibido
   private routesWithSidebar = ['home', 'base-conhecimento', 'relatorios', 'configuracoes'];
@@ -57,7 +58,7 @@ export class AppComponent implements OnInit, OnDestroy {
       id: 'sair',
       label: 'Sair',
       icon: '🚪',
-      action: () => this.logout()
+      action: () => this.abrirModalConfirmacaoSair()
     }
   ];
 
@@ -97,6 +98,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.tokenService.clearToken();
     this.isShowSideBar = false;
     this.router.navigate(['/login']);
+    this.modalConfirmacaoSair = false;
   }
 
   onMenuItemClick(item: MenuItem): void {
@@ -105,5 +107,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  abrirModalConfirmacaoSair(): void {
+    this.modalConfirmacaoSair = true;
   }
 }
