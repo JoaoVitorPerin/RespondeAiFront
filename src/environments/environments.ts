@@ -1,5 +1,4 @@
 export const environment = {
-  production: false,
-  API_WS: '',
-  API_BACK: `http://localhost:3000/`,
+  production: true,
+  API_BACK: `https://respondeaiback-413712315816.southamerica-east1.run.app/`,
 };
