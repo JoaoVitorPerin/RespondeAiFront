@@ -16,6 +16,6 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=build /app/dist/responde-ai-front/browser /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
