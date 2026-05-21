@@ -46,8 +46,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.nomeCompleto = usuarioSalvo.nomeCompleto;
       this.numeroTelefone = usuarioSalvo.numeroTelefone;
     }
-
-    this.buscarDadosPolitico();
   }
 
   ngOnDestroy(): void {
@@ -59,16 +57,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.list.nativeElement.scrollTop = this.list.nativeElement.scrollHeight;
   }
 
-  buscarDadosPolitico(){
-    this.hashChatPolitico = window.location.pathname.split('/').pop() || '';
-    if(this.hashChatPolitico) {
-      this.apiChatService.buscarDadosPolitico(this.hashChatPolitico).subscribe({
-        next: (dados) => {
-          this.dadosPolitico = dados;
-          console.log('Dados do político:', this.dadosPolitico);
-        }
-      });
-    }
+  setarDadosPolitico(dados: any) {
+    this.dadosPolitico = dados;
   }
 
   salvarUsuario() {

@@ -26,15 +26,37 @@ export class ChatBoxComponent implements OnInit {
   @Input() numeroTelefone: string = '';
   @Input() dadosPolitico: any = null;
 
+  @Output() dadosPoliticoChange = new EventEmitter<any>();
+
   textoMensagem = '';
   messages: any[] = [];
   showScrollToTop = false;
   exibirLoader = false;
+  hashChatPolitico = '';
 
   subs: Subscription[] = [];
 
   ngOnInit(): void {
-    this.apiChatService.buscarMensagens(this.numeroTelefone).subscribe({
+    this.buscarDadosPolitico();
+  }
+
+  buscarDadosPolitico(){
+    this.hashChatPolitico = window.location.pathname.split('/').pop() || '';
+    if(this.hashChatPolitico) {
+      this.apiChatService.buscarDadosPolitico(this.hashChatPolitico).subscribe({
+        next: (dados) => {
+          this.dadosPolitico = dados;
+          console.log('Dados do político:', this.dadosPolitico);
+        },
+        complete: () => {
+          this.buscarMensagens();
+        }
+      });
+    }
+  }
+
+  buscarMensagens() {
+    this.apiChatService.buscarMensagens(this.numeroTelefone, this.dadosPolitico.id).subscribe({
       next: (res) => {
         this.messages = res.map((m: any) => ({
           text: m.content,

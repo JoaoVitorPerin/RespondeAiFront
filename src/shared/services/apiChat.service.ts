@@ -25,8 +25,8 @@ export class ApiChatService {
     });
   }
 
-  buscarMensagens(numeroTelefone: string): Observable<any> {
-    return this.http.get<any>(`${this.API_BACK}mensagens/${numeroTelefone}`);
+  buscarMensagens(numeroTelefone: string, idPolitico: string): Observable<any> {
+    return this.http.get<any>(`${this.API_BACK}mensagens/${numeroTelefone}/${idPolitico}`);
   }
 
   buscarDadosPolitico(hashPolitico: string): Observable<any> {

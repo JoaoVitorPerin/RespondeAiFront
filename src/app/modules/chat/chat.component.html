@@ -2,7 +2,7 @@
 <div class="h-screen bg-base-200 flex">
   <app-chat-box
     class="w-full"
-    [dadosPolitico]="dadosPolitico"
+    (dadosPolitico)="setarDadosPolitico($event)"
     [nomeCompleto]="nomeCompleto"
     [numeroTelefone]="numeroTelefone">
   </app-chat-box>
