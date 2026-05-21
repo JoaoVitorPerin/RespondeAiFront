@@ -40,12 +40,7 @@ export class ChatBoxComponent implements OnInit {
           text: m.content,
           sender: m.role === 'user' ? 'user' : 'assistant'
         }));
-        setTimeout(() => {
-          const list = document.getElementById('message-list');
-          if (list) {
-            list.scrollTop = list.scrollHeight;
-          }
-        }, 100);
+        setTimeout(() => this.scrollToBottom(), 100);
       },
       error: (err) => {
         this.toastService.show('error', 'Erro ao carregar mensagens. Tente novamente.');
@@ -83,6 +78,8 @@ export class ChatBoxComponent implements OnInit {
       text: msg,
       sender: 'user'
     });
+    
+    setTimeout(() => this.scrollToBottom(), 50);
 
     this.apiChatService.mensagem({
       phone: this.numeroTelefone,
@@ -95,12 +92,7 @@ export class ChatBoxComponent implements OnInit {
           sender: 'assistant'
         });
 
-        setTimeout(() => {
-          const list = document.getElementById('message-list');
-          if (list) {
-            list.scrollTop = list.scrollHeight;
-          }
-        }, 100);
+        setTimeout(() => this.scrollToBottom(), 50);
       },
       error: (err) => {
         this.toastService.show('error', 'Erro ao enviar mensagem. Tente novamente.');

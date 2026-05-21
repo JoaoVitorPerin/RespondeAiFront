@@ -1,10 +1,17 @@
 import { Routes } from '@angular/router';
 import { ChatComponent } from './modules/chat/chat.component';
 import { authGuard } from '../shared/guards/authGuard';
+import { redirectRootGuard } from '../shared/guards/redirectRootGuard';
 
 export const routes: Routes = [
+    { 
+        path: '', 
+        pathMatch: 'full',
+        canActivate: [redirectRootGuard],
+        children: [] 
+    },
     {
-        path: '',
+        path: 'auth',
         loadChildren: () =>
         import('./modules/auth/auth.routes').then(m => m.AUTH_ROUTES),
     },
@@ -31,6 +38,5 @@ export const routes: Routes = [
         loadChildren: () =>
             import('./modules/configuracoes/configuracoes.routes').then(m => m.CONFIGURACOES_ROUTES),
     },
-    { path: '', pathMatch: 'full', redirectTo: 'chat' },
-    { path: '**', redirectTo: 'chat' },
+    { path: '**', redirectTo: 'auth/login' },
 ];

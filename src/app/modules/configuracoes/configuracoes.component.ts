@@ -5,6 +5,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TokenService } from './../../../shared/services/token.service';
+import { UploadService } from '../../../shared/services/upload.service';
 
 interface ConfiguracaoUsuario {
   id: string;
@@ -14,7 +15,7 @@ interface ConfiguracaoUsuario {
   phone: string;
   party: string;
   vote_number: string;
-  fotoPerfil: string;
+  photo_url: string;
 }
 
 @Component({
@@ -29,6 +30,7 @@ export class ConfiguracoesComponent implements OnInit {
   private readonly autenticacaoService = inject(AutenticacaoService);
   private readonly apiChatService = inject(ApiChatService);
   private readonly toastService = inject(ToastService);
+  private readonly uploadService = inject(UploadService);
 
   formulario: ConfiguracaoUsuario = {
     id: '',
@@ -38,7 +40,7 @@ export class ConfiguracoesComponent implements OnInit {
     phone: '',
     party: '',
     vote_number: '',
-    fotoPerfil: ''
+    photo_url: ''
   };
 
   cargosDisponiveis = [
@@ -51,6 +53,7 @@ export class ConfiguracoesComponent implements OnInit {
     'Presidente'
   ];
 
+  fotoArquivo: File | null = null;
   fotoPreview: string | null = null;
   infoSectionExpanded = true;
 
@@ -69,7 +72,7 @@ export class ConfiguracoesComponent implements OnInit {
       this.apiChatService.buscarDadosPolitico(JSON.parse(this.tokenService.getUser()).chatHash).subscribe({
         next: (response) => { 
           const usuario = response;
-          console.log('Dados do usuário carregados:', usuario);
+
           this.preencherFormulario(usuario);
         },
         error: (error) => {
@@ -92,23 +95,32 @@ export class ConfiguracoesComponent implements OnInit {
       phone: usuario.phone || '',
       party: usuario.party || '',
       vote_number: usuario.vote_number || '',
-      fotoPerfil: usuario.photo_url || ''
+      photo_url: usuario.photo_url || ''
     };
-    if (this.formulario.fotoPerfil) {
-      this.fotoPreview = this.formulario.fotoPerfil;
+    if (this.formulario.photo_url) {
+      this.fotoPreview = this.formulario.photo_url;
     }
   }
 
   onFotoSelecionada(event: any) {
+
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.fotoPreview = e.target.result;
-        this.formulario.fotoPerfil = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
+
+    if (!file) return;
+
+    // salva arquivo original
+    this.fotoArquivo = file;
+
+    // preview local
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+
+      this.fotoPreview = e.target.result;
+
+    };
+
+    reader.readAsDataURL(file);
   }
 
   salvarConfiguracoes() {
@@ -132,6 +144,26 @@ export class ConfiguracoesComponent implements OnInit {
       return;
     }
 
+    if(this.fotoArquivo) {
+      console.log('Iniciando upload da foto:', this.fotoArquivo);
+      this.uploadService.upload(this.fotoArquivo).subscribe({
+        next: (response) => {
+          console.log('Upload da foto bem-sucedido. Resposta:', response);
+          this.formulario.photo_url = response.url;
+        },
+        error: (error) => {
+          this.toastService.show('error','Erro ao fazer upload da foto. Tente novamente.');
+        },
+        complete: () => {
+          this.salvarUsuarioFinal();
+        }
+      });
+    }else{
+      this.salvarUsuarioFinal();
+    }
+  }
+
+  salvarUsuarioFinal(){
     this.autenticacaoService.editarUsuario(this.formulario, this.formulario.id).subscribe({
       next: (response) => {
         this.toastService.show('success','Configurações salvas com sucesso!');
@@ -140,7 +172,6 @@ export class ConfiguracoesComponent implements OnInit {
         this.toastService.show('error','Erro ao salvar as configurações. Tente novamente.');
       }
     });
-
   }
 
   // Formata o telefone em tempo real para (xx) xxxxx-xxxx com máximo 11 dígitos

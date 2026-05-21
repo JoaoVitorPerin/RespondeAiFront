@@ -48,7 +48,8 @@
         @if(message.sender !== 'user'){
           <div class="avatar flex-shrink-0">
             <div class="bg-gray-300 rounded-full w-8 h-8 flex items-center justify-center">
-              <span class="text-lg">👨‍⚖️</span>
+              <img *ngIf="dadosPolitico?.photo_url" [src]="dadosPolitico.photo_url" alt="Foto do Candidato" class="w-full h-full object-cover rounded-full">
+              <span *ngIf="!dadosPolitico?.photo_url" class="text-lg">👨‍⚖️</span>
             </div>
           </div>
         }
@@ -65,8 +66,8 @@
             [class.inline-block]="message.sender === 'user'"
             [class.bg-blue-500]="message.sender === 'user'"
             [class.text-white]="message.sender === 'user'"
+            innerHTML="{{ message.text }}"
           >
-            {{ message.text }}
           </div>
         </div>
       </div>
@@ -76,7 +77,8 @@
       <div class="flex gap-3">
         <div class="avatar flex-shrink-0">
           <div class=" rounded-full w-8 h-8 flex items-center justify-center">
-            <span class="text-lg">👨‍⚖️</span>
+            <img *ngIf="dadosPolitico?.photo_url" [src]="dadosPolitico.photo_url" alt="Foto do Candidato" class="w-full h-full object-cover rounded-full">
+            <span *ngIf="!dadosPolitico?.photo_url" class="text-lg">👨‍⚖️</span>
           </div>
         </div>
 
